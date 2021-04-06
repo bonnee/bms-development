@@ -1,0 +1,34 @@
+
+\begin{tikzpicture}[
+        text=blue,
+        carnode/.style={inner sep=-11pt},
+        mainnode/.style={rectangle, draw=red, fill=red!15, very thick, minimum size=10mm},
+        cellnode/.style={rectangle, draw=yellow, fill=yellow!15, very thick},
+        arrow/.style={<->, >=stealth, fill=white, draw=blue, very thick}
+    ]
+
+
+    %Nodes
+    \node[carnode]  (car)                       {\includegraphics[width=0.3\textwidth, page=1]{silhouette.pdf}};
+    \node[mainnode] (main)  [right=2cm of car]  {Mainboard};
+    \node[cellnode] (c3)    [right=of main]     {Cellboard 3};
+    \node[cellnode] (c2)    [right=of c3]       {Cellboard 2};
+    \node[cellnode] (c1)    [above=of c2]       {Cellboard 1};
+    \node[cellnode] (c0)    [left=of c1]        {Cellboard 0};
+    \node[cellnode] (c4)    [below=of c3]       {Cellboard 4};
+    \node[cellnode] (c5)    [right=of c4]       {Cellboard 5};
+
+    %Lines
+    \path [arrow] (main.north) node[anchor=south east] {\scriptsize{$master$}} |- node[above, fill=white] {CAN-bus} (c0.west);
+    \path [arrow] (car.south) |- ++(0,-1) -- ++(2,0) node[fill=white] {CAN-bus} -| (main.south);
+
+    \draw[arrow] (c0.east) -- (c1.west);
+    \draw[arrow] (c1.south) -- (c2.north);
+    \draw[arrow] (c2.west) -- (c3.east);
+    \draw[arrow] (c3.south) -- (c4.north);
+    \draw[arrow] (c4.east) -- (c5.west);
+
+    %\draw let \p1=(main) \p2=(c0) in node at (\x1,\y2) {k};
+    \draw[thick,dotted] ($(main.north west)+(-0.5, 2)$) rectangle ($(c5.south east)+(0.5, -0.5)$) node[at start, right, fill=white] {Battery};
+
+\end{tikzpicture}

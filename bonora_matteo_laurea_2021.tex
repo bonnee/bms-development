@@ -21,6 +21,19 @@
 \usepackage[paperheight=29.7cm,paperwidth=21cm,outer=1.5cm,inner=2.5cm,top=2cm,bottom=2cm]{geometry} % per definizione layout
 \usepackage{titlesec} % per formato custom dei titoli dei capitoli
 
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, arrows, automata}
+
+\usepackage{circuitikz}
+
+\usepackage{graphicx}
+\graphicspath{ {./pictures} }
+
+\definecolor{blue}{RGB}{22, 38, 77}
+\definecolor{yellow}{RGB}{255, 236, 0}
+\definecolor{orange}{RGB}{242, 145, 0}
+\definecolor{red}{RGB}{173, 15, 10}
+
 %%%%%%%%%%%%%%
 % supporto lettere accentate
 %
@@ -30,16 +43,16 @@
 
 \singlespacing
 
-\usepackage[italian]{babel}
+\usepackage[english]{babel}
 
 \begin{document}
 
-  % nessuna numerazione
-  \pagenumbering{gobble} 
-  \input{pagina_iniziale}
+% nessuna numerazione
+\pagenumbering{gobble}
+\input{pagina_iniziale}
 
-  \clearpage
- 
+\clearpage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Nota
@@ -47,13 +60,13 @@
 %% Sezione Ringraziamenti opzionale
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \input{ringraziamenti}
-  \clearpage
-  \pagestyle{plain} % nessuna intestazione e pie pagina con numero al centro
+\input{ringraziamenti}
+\clearpage
+\pagestyle{plain} % nessuna intestazione e pie pagina con numero al centro
 
-  
-  % inizio numerazione pagine in numeri arabi
-  \mainmatter
+
+% inizio numerazione pagine in numeri arabi
+\mainmatter
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,34 +84,34 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    % indice
-    \tableofcontents
-    \clearpage
-    
-    
-          
-    % gruppo per definizone di successione capitoli senza interruzione di pagina
-    \begingroup
-      % nessuna interruzione di pagina tra capitoli
-      % ridefinizione dei comandi di clear page
-      \renewcommand{\cleardoublepage}{} 
-      \renewcommand{\clearpage}{} 
-      % redefinizione del formato del titolo del capitolo
-      % da formato
-      %   Capitolo X
-      %   Titolo capitolo
-      % a formato
-      %   X   Titolo capitolo
-      
-      \titleformat{\chapter}
-        {\normalfont\Huge\bfseries}{\thechapter}{1em}{}
-        
-      \titlespacing*{\chapter}{0pt}{0.59in}{0.02in}
-      \titlespacing*{\section}{0pt}{0.20in}{0.02in}
-      \titlespacing*{\subsection}{0pt}{0.10in}{0.02in}
-      
-      % sommario
-      \input{sommario}
+% indice
+\tableofcontents
+\clearpage
+
+
+
+% gruppo per definizone di successione capitoli senza interruzione di pagina
+\begingroup
+% nessuna interruzione di pagina tra capitoli
+% ridefinizione dei comandi di clear page
+\renewcommand{\cleardoublepage}{}
+\renewcommand{\clearpage}{}
+% redefinizione del formato del titolo del capitolo
+% da formato
+%   Capitolo X
+%   Titolo capitolo
+% a formato
+%   X   Titolo capitolo
+
+\titleformat{\chapter}
+{\normalfont\Huge\bfseries}{\thechapter}{1em}{}
+
+\titlespacing*{\chapter}{0pt}{0.59in}{0.02in}
+\titlespacing*{\section}{0pt}{0.20in}{0.02in}
+\titlespacing*{\subsection}{0pt}{0.10in}{0.02in}
+
+% sommario
+\input{sommario}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Nota
@@ -114,28 +127,28 @@
 %%   risultati raggiunti, sottolineando il contributo personale del laureando/a
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      
-      
-      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      % lista dei capitoli
-      %
-      % \input oppure \include
-      %
-      \input{capitolo1}
-      \input{capitolo2}
-      \input{capitolo3}
-      %\input{capitolo4}
-      
-      
-    \endgroup
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% lista dei capitoli
+%
+% \input oppure \include
+%
+\input{introduction}
+\input{bms_hardware}
+\input{capitolo3}
+%\input{capitolo4}
 
 
-    % bibliografia in formato bibtex
-    %
-    % aggiunta del capitolo nell'indice
-    \addcontentsline{toc}{chapter}{Bibliografia}
-    % stile con ordinamento alfabetico in funzione degli autori
-    \bibliographystyle{plain}
-    \bibliography{biblio}
+\endgroup
+
+
+% bibliografia in formato bibtex
+%
+% aggiunta del capitolo nell'indice
+\addcontentsline{toc}{chapter}{Bibliografia}
+% stile con ordinamento alfabetico in funzione degli autori
+\bibliographystyle{plain}
+\bibliography{biblio}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Nota
@@ -163,12 +176,12 @@
 %%   Se disponibile, inserire la data di ultima consultazione della risorsa (gg/mm/aaaa).    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
 
-    \titleformat{\chapter}
-        {\normalfont\Huge\bfseries}{Allegato \thechapter}{1em}{}
-    % sezione Allegati - opzionale
-    \appendix
-    \input{allegati}
+
+\titleformat{\chapter}
+{\normalfont\Huge\bfseries}{Allegato \thechapter}{1em}{}
+% sezione Allegati - opzionale
+\appendix
+\input{allegati}
 
 \end{document}

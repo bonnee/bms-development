@@ -1,0 +1,15 @@
+\chapter{BMS Hardware}
+The need to measure an high amount of voltages and temperatures scattered around the battery pack means that a decentralized structure for the BMS components is preferable. The two main types of logic boards are the \textbf{Mainboard} and the \textbf{Cellboard}.
+\begin{figure}[h]
+    \centering
+    \input{pictures/hierarchy}
+    \caption{BMS hierarchy}
+    \label{fig:bms_hierarchy}
+\end{figure}
+Every cellboard measures voltages and temperatures of a \textsl{section} of the pack, and sends data back to the Mainboard via CAN bus. The Mainboard inteprets the received data and takes actions based on them.
+
+\section{Mainboard}
+The mainboard is the central control unit of the BMS. It is composed of a microcontroller, two CAN-bus lines, two serial ports and one SPI connection.
+
+
+\section{Cellboard}
