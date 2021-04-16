@@ -1,0 +1,32 @@
+\begin{circuitikz}
+    % Cell
+    \draw (0,2) to[battery1] (0,3);
+    \draw node[circle,draw,anchor=center,scale=4,label=Cell] (cell) at (0,2.5) {};
+
+    % Cell to Module
+    \draw node[circle,draw,anchor=center,scale=2.5] (ctm) at(2.25,2.5) {};
+    \draw[->] (cell.east) -- (ctm.west);
+
+    % Module
+    \draw (2.75,1.5) -- ++(0,0.5) -| ++(-0.5,0) to[battery1] ++(0,1) -| ++(0.5,0.5)
+    (2.75,2) -- ++(0.5,0) to[battery1] ++(0,1) -- ++(-0.5,0);
+    \draw (3.25,2) edge[dotted] ++(0.5,0)
+    (3.25,3) edge[dotted] ++(0.5,0);
+    \draw node[circle,draw,anchor=center,scale=7,label=Module] (module) at (2.75,2.5) {};
+
+    % Module to Block
+    \draw node[circle,draw,anchor=center,scale=2.5] (mtb) at(6.5,2.5) {};
+    \draw[->] (module.east) -- (mtb.west);
+
+    % Block
+    \draw (6.5,1) to[battery1] ++(0,1) to[battery1] ++(0,1) to[battery1] ++(0,1);
+    \draw node[circle,draw,anchor=center,scale=9,label=Block] (block) at (6.5,2.5) {};
+
+    % Section
+    \draw (10.5,3.25) -- ++(0,+0.5);
+    \draw[solid] (10.25,2) rectangle ++(0.5,1.25);
+    \draw (10.5,2) -- ++(0,-0.5);
+    \draw node[circle,draw,anchor=center,scale=9,label=Section] (Section) at (10.5,2.5) {};
+
+    % Pack
+\end{circuitikz}

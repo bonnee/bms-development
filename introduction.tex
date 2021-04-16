@@ -4,10 +4,19 @@ A battery management system is a safety-critical component of modern battery pac
 
 \section{Formula SAE}
 Formula SAE is an international design competition founded by the Society of Automotive Engineers in 1980, in which university students have to develop, build and race an open-wheel, single seater race car.
-The car built by E-Agle Trento Racing Team for the 2018 season had a mass of ~250kg. The car for the 2021 season is expected to weight around 200kg.\\
-These hard requirements push the limit on current lithium technology in terms of energy density and power delivery.
-In order to compete in the Formula SAE events, the rulebook has to be followed. The rulebook specifies many design and safety designs that have to be followed for the car to be deemed safe by the officials.
+In Europe, Formula Student Germany emanates the rules that have to be followed in order to be accepted in any european competition.
 TODO: battery rules here?\\
+
+\section{Tractive System}
+\begin{figure}[h]
+    \centering
+    \input{pictures/tractive_system}
+    \caption{Tractive system block schema}
+    \label{fig:tractive_system}
+\end{figure}
+
+The tractive system is the whole high-voltage system of the car. It comprises the battery pack, the inverters and the electric motors that drive the wheels of the car.
+The E-Agle TRT's car is powered by two independent three-phase permanent-magnet motors that drive the rear wheels of the car.
 
 \section{Battery Architecture}
 TODO: add circuits\\
@@ -23,15 +32,20 @@ The structure of a battery pack is decided on it's application's requirements. F
 
 In a Formula SAE car, the optimal setting is to have an high-voltage high-power battery pack while still being lightweight. The resulting battery will have as many series as possible, and as few parallels to reach the desired power output. E-Agle TRT car's pack has 108 cells in series and only 4 in parallel, for a total of 432 cells and \~{}388V of nominal voltage (3.6V per cell). The high power requirement is fullfilled by the use of high-discharge rate cells, 45A in this case, totalling 180A of continuous discharge. The maximum theoretical power output is \~{}70kW.
 
-TODO: pictures of pack and hierarchy\\
+\begin{figure}[h]
+    \centering
+    \input{pictures/naming}
+    \caption{Battery pack elements naming scheme}
+    \label{fig:naming}
+\end{figure}
 Phisically, the pack is subdivided in six sections, each section is made of six blocks, that are a series of three modules. As said before, a module is made of four cells in parallel.
 
 \subsection{Pack Components}
 \begin{figure}[h]
     \centering
-    \input{pictures/tractive_system}
-    \caption{Simplified tractive system schematic}
-    \label{fig:tractive_system}
+    \input{pictures/tractive_system_detail}
+    \caption{Tractive system schema}
+    \label{fig:tractive_system_detail}
 \end{figure}
 To better control the pack, two Accumulator Isolation Relays (AIR) are located at the terminals of the battery to disconnect the output of the pack when it is not needed. These relays are controlled by the BMS and can also be switched off by external devices such as emergency buttons located around the car.
 
@@ -49,6 +63,4 @@ Cells are not perfectly identical and can have slight variations in internal res
 Example:
 TODO: module voltages chart and explanation
 
-\section{Tractive System}
-The tractive system is the whole high-voltage system of the car. It comprises the battery pack, the inverters and the electric motors.
 

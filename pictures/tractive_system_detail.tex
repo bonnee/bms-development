@@ -1,0 +1,57 @@
+\ctikzset{bipoles/crossing/size=.6}
+\begin{circuitikz} \draw
+    (0,1) to[battery=\(BAT\),american] ++(0,3)
+
+    %% Negative battery bus
+    (0,4) to[fuse=\(F\)] ++(1.5,0) to[nos=\(AIR-\), n=airm] ++(2,0) -- ++(1.5,0)
+    -- (5, 2.6) to[short, -*] ++(2,0) -- (7, 4.5) -- ++(1.5,0)
+
+    %% Inverter 1
+    (7, 2.4) to[short, *-] (7.75,2.4) -- (7.75,3.5) -- (8.5,3.5)
+    (8.5,3.5) to[C=\(C_1\), n=c1, *-*] (8.5,4.5)
+
+    (8.5,0.5) -- ++(0.75,0)
+    (8.5,1.5) -- ++(0.75,0);
+    \draw[solid] (9.25,3.25) rectangle ++(0.5,1.5);
+    \path (9.25,3.25) -- ++(0,-0.5);
+    \draw[dotted] (7.3,5) rectangle (10,3) node[at start, right, fill=white] {Inverter 1};
+
+    %% Positive battery bus
+    \draw (0,1) to[nos=\(AIR+\), n=airp] ++(5,0)
+    to (5,2.4) -- ++(2,0) -- (7, 0.5) -- ++(1.5,0)
+
+    %% Inverter 2
+    (7, 2.6) to[crossing] ++(1.5,0) -- (8.5,1.5)
+    (8.5,0.5) to[C=\(C_2\), *-*] (8.5,1.5)
+
+    (8.5,3.5) -- ++(0.75,0)
+    (8.5,4.5) -- ++(0.75,0);
+    \draw[solid] (9.25,1.75) rectangle ++(0.5,-1.5);
+    \draw[dotted] (7.3,0) rectangle (10,2) node[at start, right, fill=white] {Inverter 2};
+
+    %% Pre-charge circuit
+    \draw (0.5,1) to[short, *-] ++(0,-1)
+    to[nos=\(S_p\),n=pre_sw] ++(2, 0)
+    to[R=\(R_p\),n=pre_sw] ++(2,0)
+    to[short, -*] ++(0,+1)
+
+    {[anchor=north] (6,2.4) node {\(Bus_+\)} [anchor=south] (6,2.6) node {\(Bus_-\)}};
+
+    %% Motor 1
+    \draw (11,4) node[elmech](M1){M1}
+    (9.75,4.65) -- ++(0.75,0) -- (M1.150)
+    (9.75,4) -| (M1.180)
+    (9.75,3.35) -- ++(0.75,0) -- (M1.210)
+    ;
+
+    %% Motor 2
+    \draw (11,1) node[elmech](M2){M2}
+    (9.75,1.65) -- ++(0.75,0) -/ (M2.150)
+    (9.75,1) -| (M2.180)
+    (9.75,0.35) -- ++(0.75,0) -/ (M2.210)
+    ;
+
+    \draw[dotted] (-2,5) rectangle (5.25,-0.5) node[at start, right, fill=white] {Battery Pack};
+
+
+\end{circuitikz}

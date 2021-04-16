@@ -1,42 +1,17 @@
-\ctikzset{bipoles/crossing/size=.6}
-\begin{circuitikz} \draw
-    (0,1) to[battery=\(BAT\)] ++(0,3)
+\begin{tikzpicture}[
+        roundnode/.style={circle, draw=green!60, fill=green!5, very thick, minimum size=7mm},
+        squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+    ]
+    %Nodes
+    \node[squarednode]      (pack)                              {Battery Pack};
+    \node[squarednode]       (inv1)       [above right=of pack] {Inverter 1};
+    \node[squarednode]      (inv2)       [below right=of pack] {Inverter 2};
+    \node[roundnode]        (motor1)       [right=of inv1] {Motor 1};
+    \node[roundnode]        (motor2)       [right=of inv2] {Motor 2};
 
-    (0,4) to[nos=\(AIR-\), n=airm] ++(5,0)
-    to (5, 2.6) -- ++(2,0) -- (7, 4.5) -- ++(1.5,0)
-    (7, 2.4) -- (7.75,2.4) -- (7.75,3.5) -- (8.5,3.5)
-    (8.5,4.5) to[C=\(C_1\)] (8.5,3.5)
-
-    (0,1) to[nos=\(AIR+\), n=airp] ++(5,0)
-    to (5,2.4) -- ++(2,0) -- (7, 0.5) -- ++(1.5,0)
-    (7, 2.6) to[crossing] ++(1.5,0) -- (8.5,1.5)
-    (8.5,1.5) to[C=\(C_2\)] (8.5,0.5)
-
-    (0.5,1) -- ++(0,-1)
-    to[nos=\(S_p\),n=pre_sw] ++(2, 0)
-    to[R=\(R_p\),n=pre_sw] ++(2,0)
-    to ++ (0,+1)
-
-    (8.5,0.5) edge[dashed] ++(1,0)
-    (8.5,1.5) edge[dashed] ++(1,0)
-
-    (8.5,3.5) edge[dashed] ++(1,0)
-    (8.5,4.5) edge[dashed] ++(1,0)
-
-    {[anchor=north] (6,2.4) node {\(Bus_+\)} [anchor=south] (6,2.6) node {\(Bus_-\)}};
-
-    \draw (11.5,3.75) node[elmech](M1){M1}
-    (9.75,4.9) -- ++(1,0) -/ (M1.150)
-    (9.75,3.75) -| (M1.180)
-    (9.75,2.65) -- ++(1,0) -/ (M1.210)
-    ;
-    \draw (11.5,1.25) node[elmech](M2){M2}
-    (9.75,2.35) -- ++(1,0) -/ (M2.150)
-    (9.75,1.25) -| (M2.180)
-    (9.75,0.1) -- ++(1,0) -/ (M2.210)
-    ;
-
-    \draw[dotted] (-2,5) rectangle (5.25,-0.5) node[at start, right, fill=white] {Pack};
-    \draw[dashed] (6.75,5) rectangle (9.75,2.55) node[at start, right, fill=white] {Inverter 1};
-    \draw[dashed] (6.75,0) rectangle (9.75,2.45) node[at start, right, fill=white] {Inverter 2};
-\end{circuitikz}
+    %Lines
+    \draw[->] (pack.east) -- (inv1.west);
+    \draw[->] (pack.east) -- (inv2.west);
+    \draw[->] (inv1.east) -- (motor1.west);
+    \draw[->] (inv2.east) -- (motor2.west);
+\end{tikzpicture}

@@ -8,8 +8,17 @@ The need to measure an high amount of voltages and temperatures scattered around
 \end{figure}
 Every cellboard measures voltages and temperatures of a \textsl{section} of the pack, and sends data back to the Mainboard via CAN bus. The Mainboard inteprets the received data and takes actions based on them.
 
+
 \section{Mainboard}
-The mainboard is the central control unit of the BMS. It is composed of a microcontroller, two CAN-bus lines, two serial ports and one SPI connection.
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{pictures/mainboard.jpg}
+    \caption{Mainboard PCB}
+    \label{fig:mainboard}
+\end{figure}
+The Mainboard is the central control unit of the BMS. It consists of a microcontroller that handles the pre-charge circuit, two CAN-bus lines and some external peripherals.
 
 
 \section{Cellboard}
+The Cellboards are dedicated to the measurement of module voltages and cell temperatures. The reading of those values is handled by a specialized battery management chip that communicates via SPI to the on-board microcontroller.
+
