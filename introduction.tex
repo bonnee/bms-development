@@ -3,8 +3,8 @@
 A battery management system is a safety-critical component of modern battery packs. Especially in an automotive environment, where electric vehicle batteries can be subject to unoptimal working conditions, the need of a control system that ensures that the battery operates safely and efficiently is necessary.
 
 \section{Formula SAE}
-Formula SAE is an international design competition founded by the Society of Automotive Engineers in 1980, in which university students have to develop, build and race an open-wheel, single seater race car.
-In Europe, Formula Student Germany emanates the rules that have to be followed in order to be accepted in any european competition.
+Formula SAE is an international design competition founded by the Society of Automotive Engineers in 1980, in which university students have to develop, build and race an open-wheel, single seater race car.\\
+In Europe, Formula Student Germany releases the rulebook \cite{fsg2020} that delineates how a Formula SAE car should be constructed to be eligible to participate in european competitions.
 TODO: battery rules here?\\
 
 \section{Tractive System}
@@ -20,17 +20,16 @@ The E-Agle TRT's car is powered by two independent three-phase permanent-magnet 
 
 \section{Battery Architecture}
 TODO: add circuits\\
-A battery is an electrical energy storage system that relies on chemical reactions. The main properties of a battery are: nominal voltage, internal resistance, energy capacity and discharge rate.\\
+A battery is an electrical energy storage system that relies on chemical reactions to generate a voltage. The main properties of a battery are: nominal voltage, internal resistance, energy capacity and discharge rate.\\
 The voltage of a battery is influenced by many factors including: state of charge, temperature and applied load.\ The open-circuit voltage of a Lithium-Ion battery cell is 4.2V at 100\% state of charge and 3.0V at 0\%.
-When a load is applied on a cell, the voltage drops according to Ohm's law: $V_{dropped} = R_{internal}*I_{load}$
+When a load is applied to a cell, the voltage drops according to Ohm's law: $V_{dropped} = R_{internal}*I_{load}$.
 
 \subsection{Battery Pack}
-TODO: add circuits\\
-A battery pack is a group of cells connected in series and parallel to form a bigger battery. Arranging the cells in series means that the current will only travel down a single path. TODO: embe'?\\
-In a parallel arrangement, electrons travel down multiple paths, splitting the current across more cells. This increases the current output of the battery, but the voltage remains the same as a single cell.\ A parallel of cells is also called a module, as it acts as a single, bigger cell.
-The structure of a battery pack is decided on it's application's requirements. For example, if the battery needs to have an high voltage output, it will be composed of many modules in series. If the application requires an high power output, more cells in parallel will be arranged.
+A battery pack is a group of cells connected in series and parallel to form a bigger battery. Arranging the cells in series means that the current will only travel down a single path, passing through every cell. In this case the potential of each cell is summed. \\
+In a parallel arrangement, electrons travel down multiple paths, splitting the current across more cells. This increases the current output of the battery, but the voltage is kept equals to a single cell's.\ A parallel connection of cells is also called a module, as it can be seen as a single, bigger battery cell.
+The structure of a battery pack is based on it's specific application. For example, if high voltage was to be requested, the battery would have had many modules in series whereas, if the application required an high power output or larger capacity, more cells in parallel would be arranged.
 
-In a Formula SAE car, the optimal setting is to have an high-voltage high-power battery pack while still being lightweight. The resulting battery will have as many series as possible, and as few parallels to reach the desired power output. E-Agle TRT car's pack has 108 cells in series and only 4 in parallel, for a total of 432 cells and \~{}388V of nominal voltage (3.6V per cell). The high power requirement is fullfilled by the use of high-discharge rate cells, 45A in this case, totalling 180A of continuous discharge. The maximum theoretical power output is \~{}70kW.
+In a Formula SAE car, the optimal setup is a lightweight, high-voltage and high-power battery pack. The rulebook limits voltage to 600V \cite[EV 4.1.1]{fsg2020} and power to 80kW \cite[EV 2.2.1]{fsg2020}, so the resulting battery will have as many cells in series as permitted and as little parallels as needed to reach the required power and capacity target. E-Agle TRT car's pack features 108 cells in series and only 4 in parallel, for a total of 432 cells and \~{}388V of nominal voltage (3.6V per cell). The high power requirement is fullfilled by the use of high-discharge rate cells, 45A in this case that result in an output  of 180A of continuous discharge current. As a consequence, The maximum theoretical power output is \~{}70kW and the energy capacity amounts to 6.2kWh.
 
 \begin{figure}[h]
     \centering
@@ -38,29 +37,31 @@ In a Formula SAE car, the optimal setting is to have an high-voltage high-power 
     \caption{Battery pack elements naming scheme}
     \label{fig:naming}
 \end{figure}
-Phisically, the pack is subdivided in six sections, each section is made of six blocks, that are a series of three modules. As said before, a module is made of four cells in parallel.
+As explained in figure \ref{fig:naming}, the pack is subdivided in parts that can be summarised as follows:
+\begin{itemize}
+    \item A cell is the basic unit of a battery pack.
+    \item A parallel of four cells forms a module (also called cell in some cases).
+    \item Blocks are a series of three modules, that are mounted in a single physical element.
+    \item The rulebook mandates the separation of the pack into smaller segments with precise characteristics \cite[EV 5.3.2]{fsg2020}. In this case a segment is a series of six blocks, totalling a maximum voltage of 75.6V and \~1.2kWh of energy, below the limit of 120V and 1.6 kWh.
+    \item Finally, the battery pack is a collection of six segments in series.
+\end{itemize}
 
-\subsection{Pack Components}
+\subsection{Internal Connections}
+To better control the pack, two Accumulator Isolation Relays (AIR) \cite[EV 5.6]{fsg2020} are located at both poles of the pack to disconnect its output when not needed. These relays are controlled by the BMS and can also be switched off by external devices such as emergency buttons located around the car.
 \begin{figure}[h]
     \centering
     \input{pictures/tractive_system_detail}
     \caption{Tractive system schema}
     \label{fig:tractive_system_detail}
 \end{figure}
-To better control the pack, two Accumulator Isolation Relays (AIR) are located at the terminals of the battery to disconnect the output of the pack when it is not needed. These relays are controlled by the BMS and can also be switched off by external devices such as emergency buttons located around the car.
-
-TODO: delete?\\
-Modern automotive batteries are made of lithium-ion cells, because of their high energy and power density and relatively low mass.
-is made of many small cells connected in series and parallel to each other to form an higher voltage and capacity pack. In the case of the battery in question, the pack is made of 432 cylindrical (21mm diameter, 70mm height) cells, arranged in a 108s4p configuration. As per Formula SAE regulations, the pack is physically split into six sections of 18 modules each
 
 \section{Battery Management}
-Battery management is a collection of operations that ensure the safety and efficiency of the battery pack's operating conditions.\\
-A battery management system should constantly measure cell temperatures, module voltages along with the total pack current output and check that each of those values is nominal. If there are any anomalies the battery should be turned of immediately.
-
+Battery management is a collection of operations that ensure the safety and efficiency of the battery pack's operation.\\
+A battery management system should constantly measure cell temperatures, module voltages along with the total pack current output and check that each of those values is within specification. If anomalies are detected, the battery should be disconnected immediately.
 
 \section {Module Balancing}
-Cells are not perfectly identical and can have slight variations in internal resistance between each other. This imperfection means that after some use, modules can start to deviate in voltage output. This poses a limitation on the depth at wich the battery can be charged or discharged, reducing the total usable capacity of the pack.\\
+Cells are not perfectly identical and can have slight variations in internal resistance between each other. These imperfections mean that after some use, modules can start to deviate in voltage output between one another. This poses a limitation on the depth at wich the battery can be charged or discharged, reducing the total usable capacity of the pack.\\
+Solving this problem involves charging or discharging every module until they all are inside an acceptable threshold.\\
 Example:
 TODO: module voltages chart and explanation
-
 
