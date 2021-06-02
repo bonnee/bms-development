@@ -1,13 +1,13 @@
 \begin{tikzpicture}
     \begin{axis}[
             width=12cm,
-            xlabel=Cell No.,
-            ylabel=Volt,
             enlargelimits=0.02,
+            xlabel=Cell No.,
             ybar interval,
+            ylabel=Volt,
             xtick={0,18,36,...,108},
             bar width=4pt
         ]
-        \addplot table[x=index,y=voltage, col sep=comma]{pictures/chimera_imbalance.csv};
+        \addplot [draw=red,fill=red!60] table[x=index,y=voltage, col sep=comma]{pictures/chimera_imbalance.csv};
     \end{axis}
 \end{tikzpicture}
