@@ -1,7 +1,6 @@
 \chapter{Cell Balancing}
 \label{cha:balancing}
-As discussed in the introduction, the problem of battery balancing is fundamental to maximize the net battery capacity. As measured in our previous car, which didn't have any balancing capability, after one year of usage the difference between the highest and the lowest voltages exceeded 0.1V.
-For the new balancing system a goal of 10mV was set.
+As discussed in the introduction, the problem of battery balancing is fundamental to maximize the net battery capacity. Figure \ref{fig:imbalance} shows the voltage status of E-Agle TRT's old battery pack after a year of usage.
 
 \begin{figure}[h]
     \centering
@@ -10,16 +9,18 @@ For the new balancing system a goal of 10mV was set.
     \label{fig:imbalance}
 \end{figure}
 
-\section{Strategia}
-The cell balancing hardware on the BMS is of the passive type: the highest-voltage cells are discharged by connecting resistors in parallel. Thus, energy is converted into heat. For this reason cell balancing is only done when the battery is charging.
-A hardware limitation of this particular BMS limits the discharge of two adjacent cells.
+As can be seen in the chart, The difference between the highest-voltage cell ($V_{max} = V_{70} = 3.712V$) and the lowest-voltage cell ($V_{min} = V_{73} = 3.554V$) is $V_{delta}=V_{max}-V{min}=0.158V$. Assuming an equal discharge of every cell, with a cut-off voltage of 3.000V, the lowest average voltage obtainable is $V_{low}=V_{cutoff}+(V_{avg}-V_{min})=3.066V$. Similarly, considering an equal charge with a cut-off voltage of 4.200V, the average voltage could only reach $V_{high}=V_{cutoff}+(V_{max}-V_{avg})=4.109V$.\\
+Assuming the voltage vs discharge capacity curve of a Lithium-Ion cell \cite{vtc5}, the expected loss is close to 6\%, or 3\% for each case.
+With the use of a cell balancing algorithm, $V_{delta}$ can be reduced to less than 10mV, rendering losses negligible.
 
-L'hardware del BMS implementa un bilanciamento di tipo passivo: non viene trasferita energia tra le celle, ma le celle con carica maggiore vengono scaricate mettendole in parallelo con dei resistori. Per questa ragione l'operazione di bilanciamento viene eseguita durante la ricarica, in modo da non scaricare inutilmente il pacco.
-Una limitazione sul circuito del BMS non permette la scarica di due celle adiacenti. Questo dettaglio nel design e' stato preso in considerazione nell'implementazione dell'algoritmo di bilanciamento.
+\section{Strategy}
+The balancing hardware on the BMS is passive: cells can only be discharged by connecting resistors in parallel with them. Thus, energy is converted into waste heat. To avoid unwanted battery discharge, cell balancing is only done when the battery is connected to a charger.\\
+Cell balancing is divided into temporal cycles of 10 to 60 seconds. At the beginning of a cycle an algorithm selects the cells to discharge and instructs the hardware which starts to discharge the cells. After the cycle's time is elapsed the hardware stops the discharge, then the cycle repeats.\\
+A limitation in the balancing hardware doesn't permit two adjacent cells to be discharged simultaneously. For this reason a custom algorithm has been devised to select which cells need and can be discharged.
 
-\section {Implementazione}
+\section{Implementation}
 Per funzionare, l'algoritmo implementato prende in input il vettore delle tensioni `voltages[]` e il valore `threshold` e restituisce un vettore di booleani `indexes[]` che indica quali celle vanno scaricate.
-\begin{listing}
+\begin{listing}[h]
     \begin{minted}{c}
 uint8_t balancing_compute(uint16_t voltages[], uint16_t threshold, uint16_t indexes[]);
 \end{minted}

@@ -19,7 +19,7 @@
     \node[cellnode] (c5)    [right=of c4]       {Cellboard 5};
 
     %Lines
-    \path [arrow] (main.north) node[anchor=south east] {\scriptsize{$master$}} |- node[above, fill=white] {CAN-bus} (c0.west);
+    \path [arrow] (main.north) node[anchor=south east] {}|- node[above, fill=white] {CAN-bus} (c0.west);
     \path [arrow] (car.south) |- ++(0,-1) -- ++(2,0) node[fill=white] {CAN-bus} -| (main.south);
 
     \draw[arrow] (c0.east) -- (c1.west);
