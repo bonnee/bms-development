@@ -1,13 +1,28 @@
 \begin{tikzpicture}
     \begin{axis}[
             width=12cm,
-            enlargelimits=0.02,
-            xlabel=Cell number,
-            ybar interval,
+            xmin=0, xmax=107,
+            enlarge x limits=0.01,
             ylabel=Voltage,
-            xtick={0,18,36,...,108},
-            bar width=4pt
+            xlabel=Cell number,
+            ybar=0,
+            grid=major,
+            xtick={0,18,...,108},
+            ymin=3.51,ymax=3.76,
+            use units=true,
+            y unit=V, y unit prefix=m,
+            every axis plot/.append style={
+                    ybar,
+                    bar width=1,
+                    bar shift=0pt,
+                    fill
+                }
         ]
-        \addplot [draw=red,fill=red!60] table[x=index,y=voltage, col sep=comma]{pictures/chimera_imbalance.csv};
+        \addplot [blue, fill=blue!60] table[x=index,y=voltage, col sep=comma]{pictures/chimera_imbalance.csv};
+        \addplot[red]coordinates{(70,3.712)};
+        \addplot[yellow]coordinates{(73,3.554)};
+
+        %\node[coordinate,pin=above right:{$V_{max}$}]at (   axis cs:70,3.712)   {};
+        %\node[coordinate,pin=below left:{$V_{min}$}]at (   axis cs:73,3.554)   {};
     \end{axis}
 \end{tikzpicture}

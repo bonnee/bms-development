@@ -1,0 +1,31 @@
+\begin{tikzpicture}[->, >=stealth', shorten >= 5pt, node  distance = 2.5cm, semithick]
+        \node[state, initial]   (init)                                          {$Init$};
+        \node[state]            (ts_off)    [right=of init]                     {$TS_{off}$};
+        \node[state]            (idle)      [below left=2cm of ts_off]          {$Idle$};
+        \node[state]            (pc_start)  [below=2cm of idle]                 {$PC_s$};
+        \node[state]            (pc_wait)   [right=1.5cm of pc_start]           {$PC_w$};
+        \node[state]            (pc_end)    [right=1.5cm of pc_wait]            {$PC_e$};
+        \node[state]            (ts_on)     [above left=2cm and 1cm of pc_end]  {$TS_{on}$};
+        \node[state]            (charge)    [above right=2cm and 1cm of pc_end] {$Chg$};
+        \node[state]            (stacca)    [right=1.5cm of charge]             {$Stacca$};
+        \node[state, accepting] (halt)      [below=1cm of stacca]               {$Halt$};
+        \node[state]            (all)       [above=1cm of stacca]               {$*$};
+        
+        \path (init)        edge (ts_off);
+        \path (ts_off)      edge[bend right=10] (idle);
+        \path (idle)        edge[loop left] (idle)
+                            edge (pc_start);
+        \path (pc_start)    edge (pc_wait);
+        \path (pc_wait)     edge[loop below] (pc_wait)
+                            edge[bend left=5] (ts_off)
+                            edge (pc_end);
+        \path (pc_end)      edge[bend left=10] (ts_on)
+                            edge[bend right=10] (charge);
+        \path (ts_on)       edge[loop right] (ts_on)
+                            edge[bend right=7] (ts_off);
+        \path (charge)      edge[loop left] (charge)
+                            edge[bend right] (ts_off);
+        \path (stacca)      edge (halt);
+        \path (halt)        edge[loop left] (halt);
+        \path (all)         edge (stacca);
+\end{tikzpicture}

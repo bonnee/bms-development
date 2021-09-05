@@ -1,0 +1,23 @@
+\chapter*{Abstract}
+This thesis covers my work inside E-Agle Trento Racing Team from 2019 to 2021 as the lead firmware developer on the high-voltage battery management system for Fenice, the electric race car planned to compete in the 2022 Formula Student season. The paper overviews some key software components of the BMS that were introduced with my developments.
+
+The first chapter introduces the competition environment and presents the team. The race organization and structure is explained to better understand the requirements of the car and the battery pack.
+
+The introduction presents a simple overview of the powertrain of Fenice. It continues by explaining the basic behavior of batteries under load along with the physical and electrical structure of a battery pack. Requirements are then discussed on the capacity and maximum power of the pack. Finally the BMS architecture is overlaid and the role of each component is briefly explained.
+
+The cell balancing algorithm is the topic of the third chapter. First, the problem is laid out with help from data acquired on the older car: Chimera Evoluzione. The balancing algorithm is then introduced along with all the requirements and constraints that justify the software design. Significant focus is put on the analysis of complexity of the algorithm.
+
+A crucial element of the BMS, error management, is then analyzed. The chapter explains constraints imposed by the rulebook and the approach taken to respect them while having a scalable and efficient error tracking system that puts emphasis on timing accuracy and scheduling.
+
+In conclusion the results of the cell balancing algorithm are shown with experimental data that validates the algorithm and its implementation. Some possible issues are identified and a fix is proposed.
+
+The error management implementation is shown working on real hardware and the timing functionality is tested with the use of a logic analyzer.
+
+A future advancement of the BMS in the form of state of charge estimation is then proposed, explaining the benefits of such a feature.
+
+\newpage
+
+
+%The last component covered in the thesis is the structure of an event-driven finite state machine library developed specifically for the needs of the BMS.
+
+%This thesis covers my work on the development of a custom battery management system for a , with some references and comparisons to Chimera Evoluzione. This essay focuses on some key components of a BMS. The cell balancing algorithm, which maximizes usable battery energy by equalizing voltages between cells is discussed first. An overview of the algorithm, which overcomes hardware limitations to optimize the balancing process, will be the main focus of this chapter. Next, error management will be analyzed. Safety is the primary driving force behind most of the rulebook's rules on battery pack design and management. For this reason error management should be fast, precise and effective in all situations. A centralized management can prioritize errors based on severity, and provides a simple building block for many subsystems of the BMS. Lastly, an overview of the BMS architecture, with the main state machine and interaction between subsystems will be proposed.

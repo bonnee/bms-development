@@ -21,7 +21,9 @@
 \usepackage[paperheight=29.7cm,paperwidth=21cm,outer=1.5cm,inner=2.5cm,top=2cm,bottom=2cm]{geometry} % per definizione layout
 \usepackage{titlesec} % per formato custom dei titoli dei capitoli
 
+\usepackage{hyperref}
 \usepackage{amsmath}
+\usepackage{nicefrac}
 \usepackage[ruled,vlined]{algorithm2e}
 \labelformat{algocf}{\textit{alg.}\,(#1)}
 
@@ -37,10 +39,11 @@
 
 \usepackage{url}
 \usepackage{tikz}
-\usetikzlibrary{positioning, calc, arrows, automata}
 
 \usepackage{circuitikz}
 \usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usetikzlibrary{positioning, calc, arrows, automata, pgfplots.units}
 
 \usepackage{minted} % Code
 
@@ -62,6 +65,7 @@
 \singlespacing
 
 \usepackage[english]{babel}
+\usepackage{csquotes}
 
 \begin{document}
 
@@ -79,7 +83,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\input{ringraziamenti}
-\clearpage
+%\clearpage
 \pagestyle{plain} % nessuna intestazione e pie pagina con numero al centro
 
 
@@ -129,7 +133,7 @@
 \titlespacing*{\subsection}{0pt}{0.10in}{0.02in}
 
 % sommario
-%\input{sommario}
+\input{abstract}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Nota
@@ -151,10 +155,12 @@
 %
 % \input oppure \include
 %
+\input{background}
 \input{introduction}
-%\input{bms_hardware}
-%\input{balancing}
-%\input{capitolo4}
+\input{balancing}
+\input{errors}
+\input{results}
+\input{conclusions}
 
 
 \endgroup
@@ -197,9 +203,10 @@
 
 
 \titleformat{\chapter}
-{\normalfont\Huge\bfseries}{Allegato \thechapter}{1em}{}
+{\normalfont\Huge\bfseries}{Appendix \thechapter}{1em}{}
 % sezione Allegati - opzionale
 \appendix
-%\input{allegati}
+\input{allegati}
 
 \end{document}
+

@@ -1,58 +1,50 @@
 \chapter{Introduction}
 
-\section{Formula SAE}
-Formula SAE is an international design competition founded by the Society of Automotive Engineers in 1980, in which university students develop, build and race an open-wheel, single seater race car.\\
-In Europe, Formula Student Germany is the main governing body. It releases the rulebook \cite{fsg2020} that is used in all european competitions and it organizes the biggest event of the season.\\
-During a Formula SAE competition, after the car has completed all techical and safety inspections, it partecipates to 4 types of events:
-\begin{itemize}
-    \item Skidpad: the car must complete two laps of a figure 8 track, sometimes on wet tarmac.
-    \item Acceleration: the car must do a standing start and complete a straight 75m long track as fast as possible.
-    \item Autocross: a twisty autocross circuit of length 1.5m must be completed in the least time.
-    \item Endurance and efficiency: the car must race for a total length of 22km around an autocross track.
-\end{itemize}
-For each of the previous events, points are calculated based on the time taken to complete the race. For the Endurance event efficiency is also taken into account.
-\subsection{E-Agle Trento}
-E-Agle Trento Racing Team is the Formula SAE team of the University of Trento. The team was born in 2016, and since then it has realized three all-electric Formula SAE cars: Chimera, Chimera Evoluzione and Fenice. This thesis covers the developement on Fenice, with some references and comparisons with Chimera Evoluzione.
-
 \section{Tractive System}
 \begin{figure}[h]
     \centering
-    \input{pictures/tractive_system}
-    \caption{Tractive system block schema}
+    \includegraphics[scale=0.07]{tractive_system}
+    \caption{Chimera Evoluzione's tractive system with the battery pack below the two inverters that are connected to the motors.}
     \label{fig:tractive_system}
 \end{figure}
-The tractive system is the whole high-voltage system of the car. It comprises the battery pack, the inverters and the electric motors that drive the wheels of the car.
-Like Chimera Evoluzione, Fenice is powered by two independent three-phase permanent-magnet motors that drive the rear axle. Each motor is controlled by a motor controller that converts the direct current from the battery into a three-phase alternating current for the motors. By varying the output frequency and current, the controllers are able to define the motor's speed and torque.
+Tractive system refers to all the high-voltage components of the car. It includes the battery pack, the inverters and the electric motors that drive the wheels of the car.
+As with Chimera Evoluzione, Fenice is powered by two independent three-phase permanent-magnet motors that drive the rear axle. Each motor is controlled by a motor controller that converts the direct current from the battery into a three-phase alternating current for the motors. By varying the output frequency and current, the controllers are able to set the motor's speed and torque. Motors and controllers are water-cooled while the battery is air-cooled.
 
 \section{Batteries}
-A battery is an electrical energy storage system that relies on chemical reactions to generate a voltage. The main properties of a battery are: nominal voltage, internal resistance, energy capacity and maximum discharge rate.\\
-The voltage of a battery is influenced by many factors including: state of charge, temperature and applied load. The open-circuit voltage of a Lithium-Ion battery cell is 4.2V at 100\% state of charge and 3.0V at 0\%.
+A battery is an electrical energy storage system that relies on chemical reactions to generate a voltage difference. The main properties of a battery are: nominal voltage, internal resistance, energy capacity and maximum discharge rate.
+
+The voltage of a battery is influenced by many factors including: state of charge, temperature and applied load. The open circuit voltage (OCV) of a Lithium-Ion battery cell is 4.2V at 100\% state of charge and 3.0V at 0\%.
 When a load is applied to a cell, the voltage drops according to Ohm's law: $V_{dropped} = R_{internal}*I_{load}$. The higher the current drawn, the higher the voltage drop. In high power applications, this phenomenon can significantly reduce the usable energy of the battery.
 
 \subsection{Battery Pack}
-A battery pack is a group of cells connected in series and parallel to increase the electrical characteristics of the pack. Arranging the cells in series means that the current will only travel down a single path, passing through every cell. In this case the voltage of the pack is equals to the sum of every series.\\
-In a parallel arrangement, electrons travel down multiple paths, splitting the current across more cells. This increases the current output of the battery, but the potential across all cells is equalized.
+A battery pack is a group of cells connected in series and parallel to increase the electrical characteristics of the pack. Arranging the cells in series means that the current will only travel down a single path, passing through every cell. In this case the voltage of the pack is equals to the sum of every series.
+
+In a parallel arrangement, the current travels down multiple paths, splitting across more cells. This increases the maximum current output of the battery, but the potential across all cells is equalized.
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.4]{pictures/pack.png}
     \caption{3D model of Fenice's battery pack}
     \label{fig:pack}
 \end{figure}
-The structure of a battery pack is decided considering its specific application. For example, in an high power context, higher voltage batteries are more desirable because for the same power draw, less current is required, decreasing heat losses across conductors. In high current applications, more cells in parallel could be arranged, increasing the total energy storage and battery weight as a consequence.
+The structure of a battery pack is decided considering its specific application. For example, in an high power context, higher voltage batteries are more desirable because for the same power draw, less current is required, reducing Joule effect heat losses across conductors. In high current applications, more cells in parallel could be arranged, increasing the total energy storage and battery weight as a consequence.
 
-As mentioned above, a Formula SAE car's battery should be sized to complete a 22km endurance course while also being able to output the maximum amount of power for the acceleration event. The battery should also be optimized for weight and have a low center of gravity. Furthermore, the rulebook limits maximum voltage to 600V \cite[EV 4.1.1]{fsg2020} and power to 80kW \cite[EV 2.2.1]{fsg2020}, so the resulting battery will have as many cells in series as permitted and as few parallels as needed to reach the required power and capacity target.\\
+As mentioned above, a Formula SAE car's battery should be sized to complete a 22km endurance course while also being able to output the maximum amount of power for the acceleration event. The battery should also be optimized for weight and have a low center of gravity. Furthermore, the rulebook limits maximum voltage to 600V \cite[EV 4.1.1]{fsg2020} and power to 80kW \cite[EV 2.2.1]{fsg2020}, so the resulting battery will have as many cells in series as permitted and as few parallels as needed to reach the required power and capacity target.
+
 Fenice's battery features 108 cells in series and 4 in parallel (108s4p), for a total of 432 cells and a nominal voltage of 388.8V. Higher voltages could be reached by rewiring the pack in a 144s3p configuration, but the pack would have a maximum voltage of 604.8V, exceeding the 600V limit. Adding more cells leads to increased weight, volume and excess of capacity.
-The high power requirement of the pack is fullfilled by the use of high-discharge rate cells, amounting to 45A in Fenice's case. This results in a total output of 180A of continuous discharge current. As a consequence, The maximum theoretical power output of the whole pack approaches 70kW and the energy capacity amounts to 6.2kWh.
+
+The high power requirement of the pack is fulfilled by the use of high-discharge rate cells, amounting to 45A in Fenice's case \cite{inr21700-40t}. This results in a total output of 180A of continuous discharge current. As a consequence, The maximum theoretical power output of the whole pack approaches 70kW and the energy capacity amounts to 6.2kWh.
 
 \subsubsection{Naming hierarchy}
-
 \begin{figure}[h]
     \centering
-    \input{pictures/naming}
+    \resizebox{\textwidth}{!}{%
+        \input{pictures/naming}%
+    }
     \caption{Battery pack elements naming scheme}
     \label{fig:naming}
 \end{figure}
-As explained in figure \ref{fig:naming}, the pack is subdivided in physical blocks that can be summarised as follows:
+
+As explained in \autoref{fig:naming}, the pack is subdivided in physical blocks that can be summarized as follows:
 
 \begin{itemize}
     \item The \textbf{cell} is the basic unit of the pack.
@@ -62,20 +54,64 @@ As explained in figure \ref{fig:naming}, the pack is subdivided in physical bloc
     \item In conclusion, the whole \textbf{pack} is composed of six segments connected in series.
 \end{itemize}
 
-\subsection{Internal Connections}
-To be able to safely shut off the output of the battery pack, two normally-open Accumulator Isolation Relays (AIR) \cite[EV 5.6]{fsg2020} are located at both poles of the pack and are able to disconnect the battery from the outside of the battery container. These relays are controlled by the BMS and can also be switched off by external devices such as emergency buttons and sensors located around the car. In case of short-circuits, a fuse is also present between the negative contact and the input of the negative AIR.
+
+\subsubsection{Battery insulation}
+To be able to safely shut off the output of the battery pack, two normally-open Accumulator Isolation Relays (AIR) \cite[EV 5.6]{fsg2020} are located at both poles of the pack and are able to connect the internal battery terminals from the external connector located on the battery container.
+
+The terminals of the battery pack must be always insulated from the rest of the low voltage system. For this reason an insulation monitoring device (IMD) continuously checks for insulation between both the battery poles and the car's ground. The AIRs must disconnect if the insulation falls below a resistance greater than $\nicefrac{500\Omega}{V_{max}}$, where $V_{max}$ is the maximum pack voltage. The IMD is part of a broader circuit that drives the AIRs, called shutdown circuit.
+
+\subsubsection{Shutdown Circuit}
+The shutdown circuit carries the power that drives the coils of both AIRs. \autoref{fig:shutdown_circuit} shows the block schema of the circuit with all the safety switches and their normal state.
+The most important switches are:
+\begin{itemize}
+    \item \textbf{LVMS} (Low-voltage master switch): Cuts low voltage power to the entire car. It is used as a power switch.
+    \item \textbf{BSPD} (Brake switch plausibility device): non-programmable circuit that opens when the brake and accelerator pedal are pressed simultaneously.
+    \item \textbf{AMS} (Accumulator Management System): switch opened by the BMS in case of internal errors.
+    \item \textbf{Shutdown Buttons}: Mushroom safety buttons located in the cockpit and on both sides of the car.
+    \item \textbf{TSMS} (Tractive system master switch): similar to the LVMS, the TSMS is used to arm the tractive system before powering it on.
+\end{itemize}
+
+Being a critical and complex part of the car, problems with the shutdown circuit are common. In Chimera Evoluzione there was no easy way of knowing the state of the shutdown circuit, so troubleshooting was hard and took considerable time. For Fenice the circuit has been improved by adding 16 feedback connections to the BMS. Feedbacks are inputs on the microcontroller that are directly connected to various parts of the shutdown circuit with the purpose of aiding troubleshooting. Depending on its internal state, the BMS expects a certain set of feedbacks to be high and another set to be low; If some feedback signal is in an unexpected state, an error is triggered and the error management system takes over control.
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        \node(shutdown){\includegraphics{pictures/shutdown_circuit}};
+    \end{tikzpicture}
+    \caption{Shutdown circuit block diagram \cite[EV 6.1.2]{fsg2020}}
+    \label{fig:shutdown_circuit}
+\end{figure}
+
+For example: if the BMS is in the $Idle$ state, it expects the AIRs to be powered off. If the feedback for the AIR state is high an error is triggered, and if the problem persists for a set amount of time the pack goes in a critical error state.
+
+\subsubsection{Pre-charge}
 \begin{figure}[h]
     \centering
     \input{pictures/tractive_system_detail}
-    \caption{Tractive system schema}
+    \caption{Tractive system schema highlighting the pre-charge circuitry}
     \label{fig:tractive_system_detail}
 \end{figure}
-\subsubsection{Precharge}
-If the power-on procedure of the pack simply involved putting both AIRs to their closed position, a potentially dangerous in-rush current would charge the capacitors on the inverters very quickly. To control prevent overcurrent, the precharge procedure is performed.
-First, the negative AIR together with $S_p$ is closed. This operation creates an alternative circuit that has $R_p$ as the current-limiting resistor. After $Bus$ and $BAT$ voltages have equalized, the positive AIR can finally be closed. This completes the precharge procedure and the battery is ready to be used.
+If the power-on procedure of the pack simply involved putting both AIRs to their closed position, a potentially dangerous in-rush current would charge the capacitors on the inverters very quickly. To prevent over-current, the pre-charge procedure is performed \cite{precharge}. \autoref{fig:tractive_system_detail} shows the components of the pre-charge circuit.
 
-\subsection{Battery Management Hardware}
-The need to measure a large amount of voltages and temperatures scattered around the battery pack leads to a decentralized structure for the BMS components. Two types of logic boards are involved, namely the \textbf{Mainboard} and the \textbf{Cellboard}.\\
+First, the negative AIR and $S_p$ are closed. The resulting circuit has $R_p$ as the current-limiting resistor. After $Bus$ and $BAT$ voltages have equalized, the BMS commands the positive AIR to close. This completes the pre-charge procedure and the battery is now ready to be used.
+
+\subsection{Battery Management System}
+Battery management is a collection of operations that ensure the safety and efficiency of the battery pack. A basic battery management system should constantly measure cell temperatures and voltages along with the total pack current output and check that each of those values is within specification. If anomalies are detected, the battery should be disconnected immediately via the AIRs.
+%\begin{figure}[h]
+%    \centering
+%    \input{pictures/fsm}
+%    \caption{Main BMS state machine}
+%    \label{fig:fsm}
+%\end{figure}
+
+More advanced BMS implementations communicate their state of operation with other devices, and turn the battery on or off according to external and internal signals.
+
+Moreover, during battery charging, the BMS should handle the charge current curve to maximize charging speed while keeping the battery in a safe state. Cell balancing is also an important feature.
+
+As the consequences of software errors on the BMS are potentially catastrophic, the code must adhere to strict standards and should be tested thoroughly. Furthermore, reliable error management should be present to abide to the rulebook and ease troubleshooting.
+
+\subsubsection{Hardware}
+The need to measure a large amount of voltages and temperatures scattered around the battery pack leads to a decentralized structure for the BMS components. Two types of logic boards are involved, namely the \textbf{Mainboard} and the \textbf{Cellboard}.
+
 \begin{figure}[h]
     \centering
     \input{pictures/hierarchy}
@@ -90,21 +126,31 @@ The need to measure a large amount of voltages and temperatures scattered around
 %    \caption{Mainboard PCB}
 %    \label{fig:mainboard}
 %\end{figure}
-The Mainboard is the central control unit of the BMS. It consists of a microcontroller that handles the pre-charge circuit, two CAN-bus lines and peripherals such as ADCs, EEPROMs and more. The mainboard is responsible for the actuation of the AIRs and contains the precharge circuit. It also handles communication with the rest of the car about the battery status, warnings and errors.
+The Mainboard is the central control unit of the BMS. It contains a microcontroller that handles two CAN-bus lines for internal and external communications, peripherals such as insulated ADCs, EEPROMs, serial ports, an SD-card and more. The mainboard is responsible for the actuation of the AIRs and contains the shutdown and pre-charge circuits. It also communicates voltages, temperatures, currents, battery status, warnings and errors to the rest of the car via CAN-bus. An integrated serial command-line interface and internal logging are included to help with troubleshooting.
 
 \subsubsection{Cellboard}
-There are a total of six cellboards on Fenice's battery pack, one for every battery segment. Cellbaords are dedicated to the measurement of module voltages and cell temperatures. The reading of voltages is handled by a specialized battery management chip that communicates via SPI to the on-board microcontroller. Temperatures are acquired with sensors glued to the cells. All the data collected from the boards is sent via an internal CAN-bus to the mainboard.\
-Cellboards are also in control of cell balancing. They can activate and deactivate discharging for any module through the battery management chip, depending on commands from the mainboard.
+Cellboards are dedicated to the measurement of module voltages and cell temperatures. The reading of voltages is handled by a specialized battery management chip that communicates via SPI to the on-board microcontroller. Temperatures are acquired with sensors glued to the busbars and are processed on board. All the data collected from the boards is sent via an internal CAN-bus to the mainboard.
 
-\section{Issues}
+Cellboards are also in control of cell balancing. They can activate and deactivate discharging for any module through the battery management chip, depending on commands from the mainboard and internal states.
+
+The rulebook mandates that cellboards must be isolated from the mainboard; For this reason the cellboards are self-powered by stepping down the battery segment's voltage. The communication is carried out with an isolated CAN-bus transceiver. Power for the insulated side of the transceiver coming from the mainboard also provides a power-on signal to the supply of the cellboard. In this way if the mainboard is not powered, the cellboards don't draw current from the battery pack.
+
+There are a total of six cellboards on Fenice's battery pack, one for every battery segment.
+
+\section{Issues and objectives}
 \subsection{Battery Management}
-Battery management is a collection of operations that ensure the safety and efficiency of the battery pack's functioning.\\
-A battery management system should constantly measure cell temperatures and voltages along with the total pack current output and check that each of those values is within specification. If anomalies are detected, the battery should be disconnected immediately.\\
-Advanced BMS implementations communicate their state of operation with other devices, and turn the battery on or off according to external signals.\\
-Moreover, during battery charging, the BMS should handle the charge current curve to maximize charging speed while keeping the battery in a safe state.\\
-As the consequences of software errors on the BMS are potentially catastrophic, the code must adhere to strict standards and should be tested thoroughly. Furthermore, a reliable error management should be present to abide to the rulebook and to ease troubleshooting.
+
+Work began by analyzing Chimera Evoluzione's BMS software, which ran on a slightly different architecture. While the software was functioning, it did not follow a consistent and modular structure and thus was not easily maintainable. A complete rewrite gives the possibility of implementing a more advanced and robust software architecture that is more maintainable and supports future improvements and additions while providing better separation of features.
 
 \subsection{Module Balancing}
-Cells are not perfectly identical and can have slight variations in internal resistance between each other. These differences mean that after some use, modules can start to deviate in voltage between one another. If a cell has an higher voltage than average, the pack can only be charged to the voltage of said cell, while the remaining modules don't get fully charged. The same applies during discharge: if a module is more discharged than others, it constraints the maximum depth of discharge to when it reaches its cutoff voltage, while other cells are still above it and could theoretically be discharged further.\\
-This issue limits the maximum energy storage available for use, reducing the car's range.
+Cells are not perfectly identical and can have slight variations in internal resistance between each other. These differences mean that after some use, modules can start to deviate in voltage between one another \cite{6966514}. If a cell has an higher voltage than average, the pack can only be charged to the voltage of said cell, while the remaining modules don't get fully charged. The same applies during discharge: if a module is more discharged than others, it constraints the maximum depth of discharge to when it reaches its cutoff voltage, while other cells are still above it and could theoretically be discharged further.
+
+Chimera Evoluzione did not have the hardware required to mitigate the issue. This meant that cell voltages were slowly diverging, lowering usable capacity and affecting range. Cell balancing hardware is present on Fenice's BMS with some slight limitations.
+
+The objective is to achieve the best cell balancing performance the hardware can offer.
+
+\subsection{Error Management}
+Error management is one of the more important features of a BMS. In Chimera Evoluzione errors were handled by hand with custom logic for every error type. Moreover, errors were only reported through the CAN network but were not logged internally or communicated through serial to a debugging computer. All these factors made on-track troubleshooting cumbersome and slow. Debugging issues were common amongst enclosed microcontrollers in Chimera Evoluzione. For this reason significant effort was made towards the implementation of an efficient and effective error management and communication system. A centralized framework should handle all error types without distinction and logging should be integrated as well as CAN communication. The framework should be testable with offline unit tests to validate performance and stability. With this solid base the management system can then be used to log a large variety of errors, ranging from safety critical errors to minor issues with peripherals, enhancing online and offline troubleshooting for every situation.
+
+\newpage
 

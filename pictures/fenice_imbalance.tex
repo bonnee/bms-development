@@ -1,0 +1,33 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            width=12cm,
+            xmin=0, xmax=17,
+            enlarge x limits=0.01,
+            ylabel=Voltage,
+            xlabel=Cell number,
+            ybar=0,
+            grid=major,
+            xtick={0,...,17},
+            ymin=3.79,ymax=4.0,
+            use units=true,
+            y unit=V, y unit prefix=m,
+            every axis plot/.append style={
+                    ybar,
+                    bar width=1,
+                    bar shift=0pt,
+                    fill
+                },
+            legend entries={Maximum,Minimum,Threshold}
+        ]
+        \addplot [blue, fill=blue!60] table[x=index,y=voltage, col sep=comma, forget plot]{pictures/fenice_imbalance.csv};
+        \addplot[red]coordinates{(17,3.976)};
+        \addplot[yellow]coordinates{(7,3.808)};
+        \addplot[blue,line legend, thick,sharp plot,nodes near coords={},
+            update limits=false,shorten >=-3mm,shorten <=-3mm]
+        coordinates {(0,3.908) (17,3.908)};
+        %\addlegendimage{line legend,black,sharp plot}
+
+        %\node[coordinate,pin=above right:{$V_{max}$}]at (   axis cs:70,3.712)   {};
+        %\node[coordinate,pin=below left:{$V_{min}$}]at (   axis cs:73,3.554)   {};
+    \end{axis}
+\end{tikzpicture}

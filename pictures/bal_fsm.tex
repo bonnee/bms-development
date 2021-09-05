@@ -1,0 +1,30 @@
+\begin{tikzpicture}[->, >=stealth', shorten >= 5pt, node  distance = 2.5cm, semithick]
+	\node[state, initial]	(off)                         {$Off$};
+	\node[state]            (computing)      [above right=2cm of off]          {$Comp$};
+	\node[state]            (discharging)  [right=1cm of off]                 {$Dsc$};
+	\node[state]            (cooldown)   [below right=2cm of off]           {$Cool$};
+
+	\path (off)      edge[bend right=10] (computing)
+	edge[loop below] (off);
+	\path (computing) edge (discharging)
+	edge [bend right=10] (off);
+	\path (discharging) edge[loop right] (discharging)
+	edge (cooldown)
+	edge(off);
+	\path (cooldown) edge[loop left] (cooldown)
+	edge[bend right=60] (computing)
+	edge(off);
+	%\path (pc_start)    edge (pc_wait);
+	%\path (pc_wait)     edge[loop below] (pc_wait)
+	%edge[bend left=5] (ts_off)
+	%edge (pc_end);
+	%\path (pc_end)      edge[bend left=10] (ts_on)
+	%edge[bend right=10] (charge);
+	%\path (ts_on)       edge[loop right] (ts_on)
+	%edge[bend right=7] (ts_off);
+	%\path (charge)      edge[loop left] (charge)
+	%edge[bend right] (ts_off);
+	%\path (stacca)      edge (halt);
+	%\path (halt)        edge[loop left] (halt);
+	%\path (all)         edge (stacca);
+\end{tikzpicture}

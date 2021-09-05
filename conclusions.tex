@@ -1,0 +1,20 @@
+\chapter{Conclusions and future works}
+
+\section{Cell Balancing}
+
+After one hour of balancing the voltages on the segment were converging to the wanted maximum value of $3.908 V$. In the following hour the algorithm was able to balance the pack to the situation seen in \autoref{fig:fenice_balanced} the state machine went into the $Off$ state as expected. More test are being conducted with different balancing thresholds and discharging periods to assess the reliability of the algorithm.
+
+A potentially harmful behavior can happen if inside the discharging period, a cell's voltage drops below the minimum-voltage cell. This occurrence can start a loop that alternately discharges all cells until undervoltage protections kick in. To avoid this problem short discharging periods are preferred along as not using too small values for the threshold. A future solution would monitor voltages continuously and stop the discharge when the voltage falls inside the threshold.
+
+
+\section{Error Management}
+Overall, the system works as expected and it already helped in troubleshooting while developing the firmware. There are concerns on the dynamic nature of the linked list library used as a data store. While the library is well tested and has proven to work as designed, it is generally agreed that in safety critical applications static allocation is preferred.
+
+There are plans to convert the error management system to a static storage solution by creating arrays of error instances that cover all the possible errors. There is a minor concern about the memory occupied by this solution, since all possible errors are always allocated in RAM. However, given the characteristics of the mainboard's microcontroller \cite{f446re}, RAM is plenty for this application and no problems are expected with the current amount of errors. In any case, if memory issues arise they will be noticed at compile time, since the whole codebase is statically allocated, so catastrophic failures at runtime are prevented.
+
+\section{State of charge estimation}
+Work is underway to implement a state of charge (SoC) estimation algorithm based around cell open circuit voltage estimation \cite{soc}.
+An important component of many commercial battery management systems is state of charge estimation. This feature tries to guess the amount of remaining energy in each battery cell by analyzing the load current applied to the battery and its voltage to estimate the internal resistance at each instant. If the internal resistance is known, the open circuit voltage (OCV) of the cell can be calculated using Ohm's law. With this data, SoC can be easily estimated by comparing the OCV to a voltage vs. energy lookup table to get the remaining energy in the cell. The lookup table can be found on the manufacturer's datasheet or can be measured with controlled discharged of single cells.
+
+This complex feature will be the basis of other advanced functionalities such as range estimation that can prove useful during the endurance event and power limits on lower values of SoC to prevent undervoltages and keep the battery running as long as possible.
+

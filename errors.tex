@@ -1,0 +1,245 @@
+\chapter{Error Management}
+The rulebook puts lots of emphasis on the safety of the tractive system and tries to regulate every safety-concerning aspect of it. The battery management system is one of the safety components strictly regulated by the rules. To better meet the imposed requirements, a complete and detailed error management system has been built. On previous cars, BMS related errors were hard to understand and troubleshoot. Significant effort has been made to make errors more specific and easier to comprehend.
+
+Despite the decentralized nature of the BMS, error management is centralized in the mainboard. Errors triggered by the cellboards are transmitted back to the mainboard via CAN-bus and are then handled like any other error.
+
+\section{Error Definition}
+An error has a \textit{state} property that can assume two values: \textit{warning} or \textit{fatal}. The \textit{fatal} state indicates a safety-critical problem in some part of the battery that needs immediate action. When a fatal error occurs, the battery must disconnect itself from the high voltage bus by opening the two AIRs.
+
+The rules mandate that after a fatal error, the shutdown circuit should stay latched in the off state and can only be restored by a reset switch. A \textit{warning} is not a critical issue, but can become one over time after a timeout delay.
+
+%For example, a mild overheating on the battery cells gets reported as a warning that can result in preventive measures, such as a reduction of maximum battery power, or increased cooling. If the cells' temperature reaches a critical point, the overheating warning becomes an error and the battery is immediately shut off.
+For example, an error in communicating with the cellboards starts off as a warning, since a single communication failure is not critical. After some time, if the communication is not established, the warning becomes a fatal error that needs to trigger the shutdown procedure.
+
+However, not all warnings can turn into errors: A minor issue such as a failure in the communication with the on-board EEPROM is not a safety concern, thus it is only useful as a warning of some non-critical malfunction in the system.
+
+An error instance is defined by a data structure called \textit{error\_t}. The union of \textit{type} and \textit{index} parameters uniquely define an error instance. The \textit{type} identifies the error's typology from a list of possible errors. It identifies the type of problem.
+
+\begin{listing}[h]
+	\begin{minted}{c}
+typedef struct {
+	bool active;
+	error_type type;
+	uint8_t index;
+	error_state state;
+	uint32_t timestamp;
+} error_t;
+	\end{minted}
+	\caption{\textit{error\_t} struct}
+	\label{code:error_t}
+\end{listing}
+
+The \textit{index} variable is used to distinguish errors of the same type if more than one instance can happen simultaneously. It is used on errors that involve cellboards or single cells, such as voltage and temperature errors. For example, if cells number 12 and 63 are in under-voltage, then two errors with the tuple $\{\mathit{type} = \texttt{CELL\_UNDER\_VOLTAGE}, \mathit{index} = 12\}$ and $\{\mathit{type} = \texttt{CELL\_UNDER\_VOLTAGE}, \mathit{index} = 63\}$ will be activated.
+
+The $\mathit{state}$ parameter indicates whether the instance is an error or a warning and $\mathit{timestamp}$ stores the timestamp at which the error occurred.
+
+\subsection{Types of errors}
+The BMS error manager handles the following errors:
+\begin{itemize}
+	\item \texttt{CELL\_LOW\_VOLTAGE}: A cell's voltage has dropped below the \texttt{LOW\_VOLTAGE} threshold.
+	\item \texttt{CELL\_UNDER\_VOLTAGE}: A cell's voltage has dropped below the \texttt{MIN\_VOLTAGE} threshold.
+	\item \texttt{CELL\_OVER\_VOLTAGE}: A cell's voltage has risen over the \texttt{MAX\_VOLTAGE} threshold.
+	\item \texttt{CELL\_HIGH\_TEMPERATURE}: A cell's temperature is over the \texttt{HIGH\_TEMPERATURE} value.
+	\item \texttt{CELL\_OVER\_TEMPERATURE}: A cell's temperature has reached the \texttt{MAX\_TEMPERATURE} value.
+	\item \texttt{OVER\_CURRENT}: The current delivered by the pack exceeded a specified limit.
+	\item \texttt{CAN}: There was an error in the CAN-bus communication to the car.
+	\item \texttt{ADC\_INIT}: The on-board ADC that measures pack and bus voltages has not been initialized successfully.
+	\item \texttt{ADC\_TIMEOUT}: Communication efforts with the ADC resulted in a timeout.
+	\item \texttt{INT\_VOLTAGE\_MISMATCH}: The internal voltage measured with the ADC and the voltage resulted by the sum of all the cell's voltages differs by a significant amount.
+	\item \texttt{CELLBOARD\_COMMUNICATION}: The CAN-bus communication with a cellboard was not possible.
+	\item \texttt{CELLBOARD\_INTERNAL}: Internal error in a cellboard.
+	\item \texttt{FEEDBACK}: One or more feedbacks for the shutdown circuit did not match the expected state.
+\end{itemize}
+
+\section{Timeouts}
+
+\begin{displayquote}[{\cite[EV 5.8.6]{fsg2020}}]
+	The BMS must switch off the TS via the shutdown circuit, if critical voltage, temperature
+	or current values [...] persistently occurs for more than:
+	\begin{itemize}
+		\item 500 ms for voltage and current values
+		\item 1 s for temperature values
+	\end{itemize}
+	\label{quote:586}
+\end{displayquote}
+
+Rule EV 5.8.6 cited above generally states that the delay in the power-off reaction to an error condition is deemed safe. This information can be helpful to the BMS, as it gives margin to the enforcement of error conditions. However, to take advantage of this possibility, the error management would have to keep track of the trigger and expiration time of every error. To ensure timekeeping reliability, hardware timers are used to handle the expiration logic.
+
+\subsection{Timekeeping}
+Every error type has an associated timeout delay variable, in the form of an array, that for each type, has a time value equals to the rule's maximum. If the error can only be a warning, its timeout is set to a magic number: a value that is ignored by error management functions.
+
+\begin{minted}{C}
+const uint32_t timeouts[ERROR_COUNT]={
+	[ERROR_CELL_LOW_VOLTAGE]      = UINT32_MAX,
+	[ERROR_CELL_UNDER_VOLTAGE]    = 500,
+	[ERROR_CELL_OVER_VOLTAGE]     = 500,
+	[ERROR_CELL_HIGH_TEMPERATURE] = UINT32_MAX,
+	[ERROR_CELL_OVER_TEMPERATURE] = 1000,
+	[ERROR_OVER_CURRENT]          = 500,
+	[ERROR_CAN]                   = 500,
+	[ERROR_ADC_INIT]              = UINT32_MAX,
+	[ERROR_ADC_TIMEOUT]           = UINT32_MAX,
+	[ERROR_INT_VOLTAGE_MISMATCH]  = UINT32_MAX,
+	[ERROR_CELLBOARD_COMM]        = 500,
+	[ERROR_CELLBOARD_INTERNAL]    = 500,
+	[ERROR_FEEDBACK]              = UINT32_MAX
+};
+\end{minted}
+
+When an error occurs, an hardware timer is set to trigger at the expiration time of the error, which is equals to $now + timeouts[error\_type]$. If the error is unset before the timer triggers, the timer is stopped and the error never becomes fatal. If the timer triggers, the TS is immediately shut-off, as mandated by \cite[EV 5.8.6]{fsg2020}.
+
+The above explanation doesn't consider that the amount of hardware timers on a microcontroller is limited and is lower than the amount of errors that can occur simultaneously. To answer this issue a scheduling algorithm can be employed to reduce the number of used timers while keeping track of every error.
+
+\subsection{Timer Scheduling}
+All active errors can be managed by only one timer, because at any given time, the only error to keep track of is the one that expires before any other error.
+To select the sooner-to-expire error, all errors are organized in a priority queue sorted by expiration time. The hardware timer always triggers at the expiration time of the first item in the queue. If a new error arrives in the queue, and it becomes first, the timer is reset to the new expiration time. Otherwise, if the top error gets removed, the timer is reset to the expiration time of the second error. If the queue is empty the timer is stopped.
+
+The example in \autoref{fig:error_scheduling} shows the behavior of the scheduler when two errors overlap in time. At T+0 the timer is not running as there are no active errors. At time $s_0$, $E_0$ activates and the timer is set to trigger at time $e_0=s_0+timeouts[E_0.type]=1100ms$.
+
+200ms after $s_0$, $E_1$ activates. At this point the scheduler has to decide which error to track. The choice is made by picking the smallest time $e_x$ at which error $x$ expires. In the example, $e_1$ is smaller than $e_0$, so the timer is set to trigger at $e_1=s_1+timeouts[E_1.type]=800ms$. After 600ms, $E_1$ is no longer active. Since the timer is now tracking a deactivated error, an update must be made to the scheduler. The choice now falls on the only active error: $E_0$, so the timer is set back to expire at $e_0$. Finally, $E_0$ remains active for the whole duration of its timeout period and the timer triggers at $e_0$, shutting the battery pack down.
+
+\begin{figure}[h]
+	\centering
+	\input{pictures/error_scheduling.tex}
+	\caption{Error scheduling example}
+	\label{fig:error_scheduling}
+\end{figure}
+
+\section{Implementation}
+Instances of active errors are stored in a double linked list \cite{llist} in which elements are sorted by expiration time. The error management library declares all the possible error pointers as arrays that can be used externally to the linked list to find whether a specific error is enabled, without searching the linked list itself. This gives a significant advantage since the most performed operation during the normal execution of the library is the check of the activation state of an error.
+
+%Instances of active errors are stored in a statically-allocated double linked list in which elements are sorted by expiration time. Other than providing better safety compared to dynamic allocation, the static linked list gives a performance advantage during reads: the error management library declares all the possible error instances as arrays that can be used externally to the linked list to find whether a specific error is enabled, without searching the linked list. This gives a significant advantage since the most performed operation during the normal execution of the library is the check of the activation state of an error.
+
+The insertion and removal of the items from the list have a time complexity of $O(n)$ in the case the error has the lowest priority of all. The higher time complexity gets compensated by the size of the priority queue, which is expected to be in the order of tens of elements at most.
+
+The priority queue is provided with a comparator function \autoref{code:error_compare} that is used to sort the errors by expiration time. The $delta$ variables contain the amount of time before the given error expires.
+
+\begin{listing}[h]
+	\begin{minted}[obeytabs=true,tabsize=4]{c}
+int8_t error_compare(error_t a, error_t b) {
+	uint32_t a_delta = a->timestamp + error_timeouts[a->id] - HAL_GetTick();
+	uint32_t b_delta = b->timestamp + error_timeouts[b->id] - HAL_GetTick();
+
+	if(a_delta < b_delta) return 1;
+	if(a_delta == b_delta) return 0;
+	return -1;
+}
+	\end{minted}
+	\caption{\textit{error\_compare()} function}
+	\label{code:error_compare}
+\end{listing}
+
+\subsection{Error setting and resetting}
+To abstract the management of error scheduling, two functions are exposed that handle error setting and resetting. \textit{error\_set()} is called whenever an error is detected. A timestamp parameter is requested to indicate the exact error occurrence time; The timestamp can be used for errors that have a delayed trigger signal: for example, an error triggered on a cellboard must travel on the CAN-bus and be read by the mainboard before \textit{error\_set()} is called. If the cellboard and mainboard's timestamps are synchronized and the occurrence timestamp is provided along with the error message, the transmission delay can be calculated and subtracted from the error timestamp.
+\begin{listing}[h]
+	\begin{minted}[obeytabs=true,tabsize=4]{c}
+bool error_set(error_id id, uint8_t offset, uint32_t timestamp) {
+	error_t *error = ERROR_GET(id, offset); // Get error from external pointers set
+	if (!error->active) {
+		error->active = true;
+		error->timestamp = timestamp;
+
+		if (llist_insert_priority(er_list, error) != LLIST_SUCCESS) {
+			return false;
+		}
+
+		if (error_equals(llist_get_head(er_list), error)) {
+			error_set_timer(error);
+		}
+	}
+	return true;
+}	
+	\end{minted}
+	\caption{\textit{error\_set()} function}
+	\label{code:error_set}
+\end{listing}
+
+When \textit{error\_set()} is called and the provided error is already active, the functions exits immediately. Otherwise, the error is activated and its timestamp updated. Then the error is inserted in the priority queue. If the error comes up first in queue, the timer is reset to track it.
+\begin{listing}[h]
+	\begin{minted}[obeytabs=true,tabsize=4]{c}
+bool error_reset(error_id id, uint8_t offset) {
+	error_t *error = ERROR_GET(id, offset);
+	if (error->active) {
+		// If the first error is being removed
+		if (error_equals(llist_get_head(er_list), error)) {
+			// reset the timer to the second error
+			error_t *tmp = NULL;
+		
+			llist_get(er_list, 1, (llist_node *)&tmp);
+			error_set_timer(tmp);
+		}
+		
+		if (llist_remove_by_node(er_list, error) != LLIST_SUCCESS) {
+			return false;
+		}
+		
+		error.active = false;
+		return true;
+	}
+	return false;
+}
+	\end{minted}
+	\caption{\textit{error\_reset()} function}
+	\label{code:error_reset}
+\end{listing}
+
+Whenever an error is not happening \textit{error\_reset()} is called. If the error is not active the function exits without doing time consuming operations. If the error is active and is the first in the priority queue, then the timer is reset to track the second error in queue. Finally the first error is deactivated and removed from the queue.
+
+\subsection{Scheduling}
+Timer scheduling logic is done inside \textit{error\_set()} and \textit{error\_reset()} by calling \textit{error\_set\_timer()} which sets the hardware timer up.
+Initially the timer is stopped, then if a \textit{NULL}-valued error is given to the function, or the error does not expire the timer is disabled. Otherwise, the timer's output compare register is set to the desired value. The output compare register (\textit{CCR1}) is checked against the timer's counter (\textit{CNT}) and when the two match, an interrupt is triggered. The timer's prescaler is set to increase its counter every 0.1ms, so the value of \textit{CCR1} can be easily calculated.
+\begin{listing}[h]
+	\begin{minted}[obeytabs=true,tabsize=4]{c}
+bool error_set_timer(error_t *error) {
+	// Stop the timer
+	HAL_TIM_Base_Stop_IT(&htim_err);
+
+	if (error != NULL && error->state == STATE_WARNING && error_timeouts[error->id] < SOFT) {
+		// Increase the output compare counter period register
+		htim_err.Instance->CCR1 += get_timeout_delta(error) * 10;
+
+		// Start the timer
+		HAL_TIM_Base_Start_IT(&htim_err);
+		// Enable output compare signal generation
+		HAL_TIM_OC_Start_IT(&htim_err, TIM_CHANNEL_1);
+
+		return true;
+	}
+
+	return false;
+}
+	\end{minted}
+	\caption{\textit{error\_set\_timer} function}
+	\label{code:error_set_timer}
+\end{listing}
+
+\subsection{Logging}
+The centralized approach to error management is ideal for logging data. The BMS has two means of logging error activity.
+
+\subsubsection{Internal}
+Internal logging is done to an Micro SD card located on the mainboard. The SD card is formatted in the FAT32 filesystem so that logs can be easily organized an read from a computer.
+\begin{listing}[H]
+	\begin{minted}[]{C}
+	[timestamp] Subsystem: 
+	[123.456] Error: ERROR_CELL_LOW_VOLTAGE index: 45 activated
+	[130.123] Error: ERROR_CELL_UNDER_VOLTAGE index: 45 activated
+	[130.623] Error: ERROR_CELL_UNDER_VOLTAGE index: 45 expired
+	[130.623] FSM: transitioning to BMS_STATE_HALT
+	[145.000] Error: ERROR_CELL_UNDER_VOLTAGE index: 45 deactivated
+	[150.012] Error: ERROR_CELL_LOW_VOLTAGE index: 45 deactivated
+	[150.012] FSM: transitioning to: BMS_STATE_IDLE
+	\end{minted}
+	\caption{Example log}
+	\label{code:error_log}
+\end{listing}
+When the BMS starts a new text file is created. Inside the file every line represents an event. Every event starts with the timestamp followed by the subsystem that generated the error. As can be seen in Listing \autoref{code:error_log}, the logging functionality is used in many subsystems of the BMS. In the example an undervoltage situation is shown. At first cell 45 drops under the \texttt{LOW\_VOLTAGE} threshold and activates the corresponding warning. After \~7 s cell 45 drops below \texttt{UNDERVOLTAGE} and triggers the \texttt{CELL\_UNDER\_VOLTAGE} error. Being a fatal error, this situation starts the error timer that interrupts after 500 ms and triggers a battery shutdown, transitioning the FSM to the \textit{Halt} state. After battery disconnect the voltage starts to rise and the errors get deactivated. After the last error is inactive, the FSM transitions to the \textit{Idle} state and is ready to accept commands.
+
+The plain text format shown in \autoref{code:error_log} was devised to be easily readable and scriptable. It is common to all the boards so that standardized tools can be used to filter or plot data.
+
+\subsubsection{External}
+External logging is done by the telemetry system via the CAN bus. Every time an error is set or reset a series of CAN messages containing error information are sent to the bus. Together with the telemetry system, the steering wheel interface intercepts the error messages and shows error information directly to the pilot and to track engineers.
+
+The first message encodes error types as a bitset and is used to communicate the general state of errors on the BMS. If all errors are inactive, no further messages are sent. If some errors are active, a message containing the error type and index is sent for each active error. This completes the information about the error and gives the telemetry system useful details about the problem.
+
+\newpage
+

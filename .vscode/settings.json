@@ -8,5 +8,14 @@
         "-n46"
     ],
     "cortex-debug.armToolchainPath": "/usr/bin",
-    "cortex-debug.openocdPath": "/usr/bin/openocd"
+    "cortex-debug.openocdPath": "/usr/bin/openocd",
+    "editor.wordWrap": "on",
+    "cSpell.words": [
+        "cellboard",
+        "Cellboards",
+        "cooldown",
+        "Evoluzione",
+        "Fenice",
+        "undervoltage"
+    ]
 }
