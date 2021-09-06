@@ -9,12 +9,11 @@ Production delays made full-scale testing of the battery infeasible. However, th
 	\caption{Unbalanced Fenice segment}
 	\label{fig:fenice_imbalance}
 \end{figure}
-To test the balancing algorithm a battery pack segment was connected to a cellboard. Every pack cell was charged individually to different voltages in order to create a great imbalance. \autoref{fig:fenice_imbalance} shows the initial state of the segment with a total imbalance of $V_{17} - V_{7} = 3.976 - 3.808 = 0.168 V$. For this test the balancing settings are set to have a maximum imbalance of $100 mV$. With these settings all cells with a voltage above $V_{7} + 100 mV = 3.908 V$ need to be discharged, in this case cells 1, 3, 4, 5, 9, 10, 11, 12, 13, 14, 15, 16 and 17 are all above the threshold voltage.
-The test setup only involved a single cellboard, disconnected from the mainboard. The balancing algorithm and state machine ran only on the cellboard only using its internal voltage measurements as input. A serial console was connected to a computer for monitoring and data gathering.
+To test the balancing algorithm a battery pack segment was connected to a cellboard. Every segment cell was charged individually to different voltages to create an imbalanced situation. \autoref{fig:fenice_imbalance} shows the initial state of the segment with a total imbalance of $V_{17} - V_{7} = 3.976V - 3.808V = 0.168V$. For this test, the balancing settings are set to have a maximum imbalance of $100mV$. With these settings all cells with a voltage above $V_{7} + 100mV = 3.908V$ need to be discharged, in this case cells 1, 3, 4, 5, 9, 10, 11, 12, 13, 14, 15, 16 and 17 are all above the threshold voltage.
 
+The test setup only involved a single cellboard, disconnected from the mainboard. The balancing algorithm and state machine ran on the cellboard only relying on its internal voltage measurements as input. A serial console was connected to a computer for monitoring and data gathering.
 
-
-After starting the state machine the algorithm correctly computed the cells to balance and proceeded to the discharge state. The serial console showed the cells that were being discharged and after the predefined 30 seconds the state machine went into the cooldown state. After 10 seconds a new set of cells was computed and balancing began again.
+After starting the state machine the algorithm correctly computed the cells to balance and proceeded to the discharge state. The serial console showed the cells that were being discharged and after the predefined 30 seconds of discharge, the state machine went into the cooldown state. After 10 seconds a new set of cells was computed and balancing began again.
 \begin{figure}[h]
 	\centering
 	\input{pictures/fenice_balanced.tex}
@@ -25,14 +24,14 @@ After starting the state machine the algorithm correctly computed the cells to b
 \section{Error management}
 Unit testing was used to validate the priority queue part of the system. The timer scheduling part has been tested using a logic analyzer to verify the scheduling and timing accuracy.
 
-In \autoref{fig:error_test} the results of the test can be seen. The test scenario is analogue to the one presented in \autoref{fig:error_scheduling} in which two errors happen within the same timeframe. The two drops of channel 0 signal when the timer switches from following $E_0$ to $E_1$ and vice versa.
+In \autoref{fig:error_test} test results can be seen. The test scenario is analog to the one presented in \autoref{fig:error_scheduling} in which two errors happen within the same timeframe. The two small drops of the \textit{Timer} channel signal when the timer switches from following $E_0$ to $E_1$ and vice versa.
 When the timer triggers the \texttt{Fatal} signal can be seen going high.
 
-The timing shown in was very consistent between multiple tests, therefore the error management system can be deemed sufficiently consistent.
+The timing shown in was very consistent across multiple tests albeit being higher than expected. Given the high repeatability of the unwanted extra time, all timeout values have been shortened to remain within the rulebook specification.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{error_test}
-	\caption{Error timing test.}
+	\caption{Error timing test. $E_1$ is reset before triggering, and the timer switches back to $E_0$.}
 	\label{fig:error_test}
 \end{figure}
 \newpage

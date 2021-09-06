@@ -28,15 +28,15 @@ Passive balancing is the simplest technique to implement: it only needs a switch
 \end{figure}
 
 More efficient techniques exist under the name of active balancing. As the name suggests, excess energy is not wasted using these methods.
-Energy transfer is a balancing strategy that is able to move energy between cells of the pack. For this to work every cell must be interconnected with each other with some circuitry. One of the simplest transfer circuits is made of capacitors that can be alternatively connected in parallel to two adjacent cells. Both poles of each capacitor can be switched at the same time to be connected to either one of the two cells, charging the capacitor from one cell and discharging it on the other, using the capacitor as a bucket to transfer energy between the cells. This is the simplest active balancing method, but its simplicity has the disadvantage of being slow to transfer energy between distant cells \cite{6966514}. More capacitor tiers can be added to provide more transfer paths at the cost of scalability.
+Energy transfer is a balancing strategy that can move energy between cells of the pack. For this to work, every cell must be interconnected with each other with some circuitry. One of the simplest transfer circuits is made of capacitors that can be alternately connected in parallel to two adjacent cells. Both poles of each capacitor can be switched at the same time to be connected to either one of the two cells, charging the capacitor from one cell and discharging it on the other, using the capacitor as a bucket to transfer energy between the cells. This is the simplest active balancing method, but its simplicity has the disadvantage of being slow to transfer energy between distant cells \cite{6966514}. More capacitor tiers can be added to provide more transfer paths at the cost of scalability.
 
 Other systems with increased complexity involve the use of transformers, buck-boost converters or more complicated methods to transfer energy between each cell with more flexibility.
 
-In the use case of a Formula SAE car, where the battery goes through full charge and discharge cycles, the disadvantages of a passive solution are less relevant, while the increased complexity of active balancing results in more weight and failure points. If done only during charging, passive balancing doesn't affect the running efficiency of the car, as it doesn't discharge cells when the car is running. Active balancing could provide efficiency advantages if the battery doesn't get fully charged often, as happens in road cars. For these reasons a passive balancing design was chosen.
+In the use case of a Formula SAE car, where the battery goes through full charge and discharge cycles, the disadvantages of a passive solution are less relevant, while the increased complexity of active balancing results in more weight and failure points. If done only during charging, passive balancing doesn't affect the running efficiency of the car, as it doesn't discharge cells when the car is running. Active balancing could provide efficiency advantages if the battery doesn't get fully charged often, as happens in road cars. For these reasons, a passive balancing design was chosen.
 
-More advanced balancing algorithms base the imbalance computation on the state of charge of the cell instead of cell voltage \cite{8834858}. This preliminary study focuses on voltage values as reference, since state of charge estimation is not yet implemented in the BMS.
+More advanced balancing algorithms base the imbalance computation on the state of charge of the cell instead of cell voltage \cite{8834858}. This preliminary study focuses on voltage values as a reference, since the state of charge estimation is not yet implemented in the BMS.
 
-The balancing hardware is located on the cellboards and is composed of the battery management chip that drives external transistors which are able to connect each battery module in parallel with a power resistor. The resulting circuit discharges the module at a rate of $400 mA$ \cite{fenice-bms-hv}.
+The balancing hardware is located on the cellboards and is composed of the battery management chip that drives external transistors which can connect each battery module in parallel with a power resistor. The resulting circuit discharges the module at a rate of $400 mA$ \cite{fenice-bms-hv}.
 
 \subsection{Strategy}
 A design constraint in the balancing circuitry on the cellboards prevents two adjacent cells to be discharged simultaneously. To work around this problem an algorithm has been developed to select the optimal set of cells that can be discharged at the same time.
@@ -48,7 +48,7 @@ A design constraint in the balancing circuitry on the cellboards prevents two ad
     \label{fig:bms_fsm}
 \end{figure}
 
-When enabled, the cell balancing algorithm runs periodically following the state machine shown in \autoref{fig:bms_fsm}: first, the algorithm computes the set of cells to discharge (\textit{Comp}); The balancing ICs on the cellboards are then instructed to start the discharge process on selected cells. The discharge period lasts 30 seconds at the end of which there is a cooldown period of 10 seconds, that lets the voltages stabilize and the discharge resistors cool down. After cooldown, the algorithm is executed again. If no cells need discharging anymore, the state machine goes back to the \textit{Off} state. The balancing state machine can be stopped at all times by external events.
+When enabled, the cell balancing algorithm runs periodically following the state machine shown in \autoref{fig:bms_fsm}: first, the algorithm computes the set of cells to discharge (\textit{Comp}); The balancing ICs on the cellboards are then instructed to start the discharge process on selected cells. The discharge period lasts 30 seconds at the end of which there is a cooldown period of 10 seconds, which lets the voltages stabilize and the discharge resistors cool down. After cooldown, the algorithm is executed again. If no cells need discharging anymore, the state machine goes back to the \textit{Off} state. The balancing state machine can be stopped at all times by external events.
 %Cell balancing is divided into temporal cycles of 30 seconds. At the beginning of a cycle an algorithm selects the cells to discharge and instructs the hardware which starts to discharge the cells. After the cycle's time is elapsed, the hardware stops the discharge and waits for voltages to stabilize; then the cycle repeats.\\
 %A limitation in the Cellboard hardware doesn't let two adjacent cells to be discharged simultaneously. For this reason a custom algorithm has been devised to select which cells need and can be discharged.
 
@@ -58,7 +58,7 @@ The algorithm is made of two parts: the first computes the amount of imbalance o
 
 \subsection{Imbalance computation}
 
-The imbalance computation algorithm assigns an integer value $I[i]$ to each cell that is equals to the difference between the $i$th cell and the lowest voltage cell plus a threshold. Since passive balancing can only discharge the batteries, the minimum voltage in the pack is the target voltage.
+The imbalance computation algorithm assigns an integer value $I[i]$ to each cell that equals the difference between the $i$th cell and the lowest voltage cell plus a threshold. Since passive balancing can only discharge the batteries, the minimum voltage in the pack is the target voltage.
 \[
     I[i] = voltages[i] - (min(voltages) + threshold)
 \]
@@ -86,7 +86,7 @@ Given a vector of imbalances $I[]$ of size $n$, select the smallest subset of no
 
 By using the imbalance of each cell as a priority value, the algorithm prefers highly unbalanced cells.
 
-Let $Cells[i]$ be a subset of the first $i \le n$ indexes that respects the above requirements. Given this definition, $Cells[n]$ is the solution to the problem.
+Let $Cells[i]$ be a subset of the first $i \le n$ indexes that respect the above requirements. Given this definition, $Cells[n]$ is the solution to the problem.
 
 \subsubsection{Recursive step}
 First, only cells with a positive imbalance ($I[i] > 0$) are considered. For these cells, two options are available:
@@ -132,7 +132,7 @@ A very efficient approach to this problem is to find and save in a helper array 
 \subsubsection{Computing the maximum}
 Let $C[i]$ be the maximum total imbalance from compatible cells that can be obtained with the first $i$ cells.
 
-$C[n]$ is the solution of the problem.
+$C[n]$ is the solution to the problem.
 
 \paragraph{Recursive Step}
 
@@ -183,12 +183,12 @@ Since $\mathit{imbalance()}$ returns an array of non-negative values, there is n
 \end{algorithm}
 
 \subsubsection{Reconstructing the set}
-The \textit{exclude()} function describes a correct albeit partial solution to the problem, since the set of cells to discharge is not returned. However, as discussed before, the set of selected cells can be reconstructed by analyzing the $C[]$ array in a top-down fashion.
+The \textit{exclude()} function describes a correct albeit partial solution to the problem since the set of cells to discharge is not returned. However, as discussed before, the set of selected cells can be reconstructed by analyzing the $C[]$ array in a top-down fashion.
 
 The \textit{solution()} recursive function starts from the $C[]$ array returned by \textit{exclude()} and finds the cells that have been selected by comparing the imbalance of each cell with the relative increase in imbalance from the previous elements of the $C[]$ array.
 For example, if $C[i]$ is equals to $C[i-1]$ it can be assumed that cell $i-1$ has not been selected, otherwise $C[i]$ would be greater than $C[i-1]$. In this case the output set remains unchanged and the function is called with a decremented $i$.
 
-If the two values are different the only possibility is for cell $i-1$ to have been selected, so $\{i-1\}$ is inserted in the output set and \textit{solution()} is called again with $i$ decremented by 2. However, if $i$ is equals to 1 it cannot be decremented by 2 as it will go negative. For this particular case the set $\{i-1\}$ is returned.
+If the two values are different the only possibility is for cell $i-1$ to have been selected, so $\{i-1\}$ is inserted in the output set and \textit{solution()} is called again with $i$ decremented by 2. However, if $i$ equals to 1 it cannot be decremented by 2 as it will go negative. For this particular case the set $\{i-1\}$ is returned.
 
 When $i$ reaches 0, the empty set is returned, as a starting point for the stack of pending function calls that will fill it.
 
@@ -243,7 +243,7 @@ Even if \textit{solution()} is called $seg$ times, the size of data is also smal
 The complete algorithm inherits the complexity from its components, thus can be categorized as $\Theta(n)$ as well.
 
 \subsubsection{Distribution}
-The modular nature of the algorithm enables the possibility of running different parts in separate systems. The mainboard is the only device that has track of all the voltages together, so it's the only that can run \textit{imbalance()}. The list of imbalanced cells is then sent to the cellboards which execute the remaining \textit{exclude()} and \textit{solution()} functions for their subset of cells.
+The modular nature of the algorithm enables the possibility of running different parts in separate systems. The mainboard is the only device that has track of all the voltages together, so it's the only one that can run \textit{imbalance()}. The list of imbalanced cells is then sent to the cellboards which execute the remaining \textit{exclude()} and \textit{solution()} functions for their subset of cells.
 
 \newpage
 
