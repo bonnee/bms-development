@@ -82,7 +82,7 @@ The hardware limitation discussed above poses the interesting challenge of findi
 
 The problem can be formulated as follows:
 
-Given a vector of imbalances $I[]$ of size $n$, select the smallest subset of non-adjacent cells that maximizes the sum of imbalance. The smallest subset is required to avoid cells with zero imbalance.
+Given a vector of imbalances $I[]$ of size $n$, return the subset of non-adjacent cells (with positive imbalance) that maximizes total imbalance.
 
 By using the imbalance of each cell as a priority value, the algorithm prefers highly unbalanced cells.
 
@@ -158,7 +158,7 @@ By adding the base cases, the complete recursion can be defined as follows:
 \[
     C[i] = \begin{cases}
         0                                      & i=0      \\
-        I[0]                                   & i=1      \\
+        \max(0, I[0])                          & i=1      \\
         \mathit{\max}(C[i-1], C[i-2] + I[i-1]) & i \geq 2
     \end{cases}
 \]
@@ -236,7 +236,7 @@ While \textit{solution()} could simply be called once, this distinction is neces
 
 \subsubsection{Complexity}
 It's easy to see that \textit{imbalance()}, \textit{exclude()} and \textit{solution()} are all belonging to the linear time complexity set $\Theta(n)$.
-Even if \textit{solution()} is called $seg$ times, the size of data is also smaller by the same value, and with $seg$ being a constant the function still has a complexity of $\Theta(n)$.
+Even if \textit{solution()} is called $seg$ times, the size of data is also smaller by the same value, and with $seg$ being a constant, the function still has a complexity of $\Theta(n)$.
 \[
     \sum_{i=0}^{seg} \Theta(n/seg) = \Theta(n)
 \]
