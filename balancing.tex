@@ -58,9 +58,9 @@ The algorithm is made of two parts: the first computes the amount of imbalance o
 
 \subsection{Imbalance computation}
 
-The imbalance computation algorithm assigns an integer value $I[i]$ to each cell that equals the difference between the $i$th cell and the lowest voltage cell plus a threshold. Since passive balancing can only discharge the batteries, the minimum voltage in the pack is the target voltage.
+The imbalance computation function assigns a positive integer value $I[i]$ to each cell that equals the difference between the $i$th cell and the lowest voltage $i$th cell plus a threshold. If the cell is below the threshold, the imbalance value is set to 0.
 \[
-    I[i] = voltages[i] - (min(voltages) + threshold)
+    I[i] = max(0, voltages[i] - (min(voltages) + threshold))
 \]
 
 \begin{algorithm}[H]
@@ -80,16 +80,16 @@ The practical implementation cuts the imbalance to values greater than zero, as 
 \subsection{Cell Selection}
 The hardware limitation discussed above poses the interesting challenge of finding the optimal combination of compatible cells that need to be discharged. The optimal combination is the one that discharges all the overcharged cells in the least amount of cycles, avoiding neighboring cells in the same discharge cycle. The problem is similar to a canonical optimization problem that can be solved efficiently with Dynamic Programming \cite{montresor}.
 
-The problem can be formulated as follows:
+The problem is formulated as follows:
 
-Given a vector of imbalances $I[]$ of size $n$, return the subset of non-adjacent cells (with positive imbalance) that maximizes total imbalance.
+Given a vector of non-negative imbalances $I[]$ of size $n$, return the subset of non-adjacent cells that maximizes total imbalance.
 
 By using the imbalance of each cell as a priority value, the algorithm prefers highly unbalanced cells.
 
-Let $Cells[i]$ be a subset of the first $i \le n$ indexes that respect the above requirements. Given this definition, $Cells[n]$ is the solution to the problem.
+Let $Cells[i]$ be a subset of the first $i \le n$ indexes that respect the requirements above. Given this definition, $Cells[n]$ is the solution to the problem.
 
 \subsubsection{Recursive step}
-First, only cells with a positive imbalance ($I[i] > 0$) are considered. For these cells, two options are available:
+For each cell $i$, two options are available:
 \begin{itemize}
     \item if $i$ is selected:
           \[
@@ -109,7 +109,7 @@ The recursion is completed by the introduction of two base cases:
 \begin{gather}
     Cells[0]=\emptyset \\
     Cells[1]=\begin{cases}
-        \emptyset & I[i-1] \leq 0 \\
+        \emptyset & I[i-1] = 0 \\
         \{ 0 \}   & I[i-1] > 0
     \end{cases}
 \end{gather}
@@ -118,16 +118,18 @@ The recursion is completed by the introduction of two base cases:
 The complete solution can be expressed with the following recursive equation:
 \[
     Cells[i] = \begin{cases}
-        \emptyset                                           & i=0\ or\ (i=1,\ I[i-1]<0) \\
-        \{i-1\}                                             & i=1, \ I[i-1] > 0         \\
-        Cells[i-1]                                          & i \ge 2,\ I[i-1] \leq 0   \\
-        \mathit{highest}(Cells[i-1], \{i\} \cup Cells[i-2]) & i \ge 2,\ I[i-1] > 0      \\
+        \emptyset                                           & i=0                \\
+        \{i-1\}                                             & i=1                \\
+        Cells[i-1]                                          & i > 1,\ I[i-1] = 0 \\
+        \mathit{highest}(Cells[i-1], \{i\} \cup Cells[i-2]) & i > 1,\ I[i-1] > 0 \\
     \end{cases}
 \]
 
+The double condition on the recursive cases avoids zero-valued imbalance cells to be inserted in the output set.
+
 \subsection{Implementation}
 
-A very efficient approach to this problem is to find and save in a helper array ($C[]$) the maximum sum of imbalances for all subsets of $n$ and compatible cells, and then reconstruct the solution by walking back from it. This variation benefits from not relying on complex data structures such as sets, and it reduces computational complexity by not needing the custom $\mathit{highest}$ function for each cell that could result in an algorithm with quadratic computational complexity.
+While correct in theory, the above solution can not be efficiently translated into code. A more effective approach to this problem is to find and save in a helper array ($C[]$) the maximum sum of imbalances for all subsets of $n$ and compatible cells, and then reconstruct the solution by walking back from it. This variation benefits from not relying on complex data structures such as sets, and it reduces computational complexity by not needing the custom $\mathit{highest}$ function for each cell that could result in an algorithm with quadratic computational complexity.
 
 \subsubsection{Computing the maximum}
 Let $C[i]$ be the maximum total imbalance from compatible cells that can be obtained with the first $i$ cells.
@@ -158,7 +160,7 @@ By adding the base cases, the complete recursion can be defined as follows:
 \[
     C[i] = \begin{cases}
         0                                      & i=0      \\
-        \max(0, I[0])                          & i=1      \\
+        I[0]                                   & i=1      \\
         \mathit{\max}(C[i-1], C[i-2] + I[i-1]) & i \geq 2
     \end{cases}
 \]
