@@ -147,13 +147,13 @@ For each cell $i$, two options can be considered:
 
     \item If cell $i$ is selected, cell $i-1$ has to be discarded, but $i-2$ can be selected:
           \[
-              C[i]=I[i-1]+C[i-2]
+              C[i]=C[i-2] + I[i-1]
           \]
 \end{enumerate}
 
 To maximize the total imbalance, the highest of the two possibilities is chosen:
 \[
-    C[i]=\max(C[i-1],\ I[i-1] + C[i-2])
+    C[i]=\max(C[i-1],\ C[i-2] + I[i-1])
 \]
 
 By adding the base cases, the complete recursion can be defined as follows:
